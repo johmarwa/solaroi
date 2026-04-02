@@ -9,6 +9,7 @@
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8fafc; color: #0f172a; min-height: 100vh; padding: 2rem 1rem; }
   .page { max-width: 960px; margin: 0 auto; }
 
+  /* HEADER */
   header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 2.5rem; }
   .logo-row { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
   .logo-icon { background: #F26522; border-radius: 12px; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 8px 20px rgba(242,101,34,0.25); }
@@ -19,33 +20,63 @@
   .quote-badge { display: none; align-items: center; gap: 8px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 8px 16px; }
   .quote-badge span { font-size: 0.7rem; font-weight: 700; color: #15803d; text-transform: uppercase; letter-spacing: 0.05em; }
 
+  /* LAYOUT */
   .layout { display: grid; grid-template-columns: 320px 1fr; gap: 2rem; align-items: start; }
   @media (max-width: 780px) { .layout { grid-template-columns: 1fr; } }
 
+  /* PANEL */
   .panel { background: #fff; border-radius: 28px; border: 1px solid #e2e8f0; padding: 1.5rem; }
   .panel-title { font-size: 1rem; font-weight: 600; color: #1e293b; display: flex; align-items: center; gap: 8px; margin-bottom: 1.25rem; }
 
+  /* FIELDS */
   .field { margin-bottom: 1.1rem; }
   .field label { display: flex; align-items: center; gap: 4px; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
   .input-wrap { position: relative; }
-  .input-wrap input[type=text] { width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 13px 56px 13px 16px; font-size: 1rem; font-weight: 700; color: #0f172a; outline: none; }
-  .input-wrap input:focus { border-color: #F26522; box-shadow: 0 0 0 3px rgba(242,101,34,0.12); }
+  .input-wrap input[type=text] { width: 100%; background: #f8fafc; border: 2px solid #f1f5f9; border-radius: 14px; padding: 13px 56px 13px 16px; font-size: 1rem; font-weight: 700; color: #0f172a; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+  .input-wrap input[type=text]:focus { border-color: #F26522; box-shadow: 0 0 0 3px rgba(242,101,34,0.12); }
   .unit-tag { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 0.85rem; font-weight: 700; color: #94a3b8; pointer-events: none; }
-  select { width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 13px 16px; font-size: 0.9rem; font-weight: 700; color: #0f172a; outline: none; appearance: none; cursor: pointer; }
-  select:focus { border-color: #F26522; box-shadow: 0 0 0 3px rgba(242,101,34,0.12); }
 
+  /* CUSTOM SELECT */
+  .select-wrap { position: relative; }
+  .select-wrap::after {
+    content: '';
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    background: #F26522;
+    border-radius: 8px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 16px;
+    pointer-events: none;
+    transition: background-color 0.15s;
+  }
+  .select-wrap:focus-within::after { background-color: #d4521a; }
+  .custom-select { 
+    width: 100%; background: #f8fafc; border: 2px solid #f1f5f9; border-radius: 14px; 
+    padding: 13px 52px 13px 16px; font-size: 0.9rem; font-weight: 700; color: #0f172a; 
+    outline: none; cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s;
+    appearance: none;
+  }
+  .custom-select:focus { border-color: #F26522; box-shadow: 0 0 0 3px rgba(242,101,34,0.12); }
+
+  /* TOGGLES */
   .toggle-group { display: flex; background: #f1f5f9; border-radius: 14px; padding: 4px; gap: 2px; }
   .toggle-btn { flex: 1; padding: 10px; border: none; border-radius: 10px; background: transparent; font-size: 0.8rem; font-weight: 600; color: #64748b; cursor: pointer; transition: all 0.15s; }
   .toggle-btn.active { background: #F26522; color: #fff; box-shadow: 0 2px 8px rgba(242,101,34,0.3); }
 
-  .slider-box { background: #f8fafc; border-radius: 20px; border: 1px solid #e2e8f0; padding: 1rem; margin-top: 0.5rem; }
+  /* SLIDER */
+  .slider-box { background: #f8fafc; border-radius: 20px; border: 2px solid #f1f5f9; padding: 1rem; margin-top: 0.5rem; }
   .slider-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
   .slider-label { font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.08em; }
   .slider-val-wrap { display: flex; align-items: center; gap: 4px; }
   .slider-val-wrap input[type=number] { width: 52px; text-align: center; font-size: 0.75rem; font-weight: 800; color: #F26522; background: #fff; border: 1px solid rgba(242,101,34,0.2); border-radius: 8px; padding: 4px 6px; outline: none; -moz-appearance: textfield; }
   .slider-val-wrap input::-webkit-outer-spin-button, .slider-val-wrap input::-webkit-inner-spin-button { -webkit-appearance: none; }
   .slider-val-wrap span { font-size: 0.75rem; font-weight: 800; color: #F26522; }
-
   input[type=range] { -webkit-appearance: none; width: 100%; height: 8px; border-radius: 999px; background: #e2e8f0; outline: none; cursor: pointer; margin: 8px 0 0; display: block; }
   input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; border-radius: 50%; background: #F26522; border: 4px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.15); cursor: pointer; margin-top: -10px; }
   input[type=range]::-moz-range-thumb { width: 28px; height: 28px; border-radius: 50%; background: #F26522; border: 4px solid #fff; cursor: pointer; }
@@ -53,17 +84,22 @@
 
   .divider { border-top: 1px solid #f1f5f9; margin: 1rem 0; padding-top: 1rem; }
 
+  /* TOOLTIP */
   .tip { position: relative; display: inline-flex; align-items: center; margin-left: 4px; cursor: help; }
-  .tip-box { display: none; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); margin-bottom: 6px; width: 200px; padding: 8px 10px; background: #1e293b; color: #fff; font-size: 0.7rem; border-radius: 8px; z-index: 20; text-align: center; font-weight: 400; pointer-events: none; line-height: 1.5; text-transform: none; letter-spacing: 0; }
+  .tip svg { color: #94a3b8; transition: color 0.15s; }
+  .tip:hover svg { color: #F26522; }
+  .tip-box { display: none; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); margin-bottom: 8px; width: 220px; padding: 10px 12px; background: #0f172a; color: #fff; font-size: 0.7rem; border-radius: 12px; z-index: 20; text-align: center; font-weight: 400; pointer-events: none; line-height: 1.6; text-transform: none; letter-spacing: 0; }
   .tip:hover .tip-box { display: block; }
 
+  /* CTA */
   .cta { width: 100%; margin-top: 1.5rem; background: #0f172a; color: #fff; border: none; border-radius: 20px; padding: 16px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 10px; }
   .cta:hover { background: #1e293b; }
   .cta:active { transform: scale(0.98); }
   .cta:disabled { opacity: 0.6; cursor: not-allowed; }
 
+  /* RESULTS */
   .results-col { display: flex; flex-direction: column; gap: 2rem; }
-  .section-title { font-size: 0.7rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1rem; display: flex; align-items: center; gap: 6px; }
+  .section-title { font-size: 0.7rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1rem; }
   .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
   .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 1rem; display: flex; flex-direction: column; gap: 6px; transition: box-shadow 0.15s; }
   .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.07); }
@@ -74,12 +110,14 @@
   .card-unit { font-size: 0.75rem; font-weight: 600; color: #94a3b8; }
   .card-desc { font-size: 0.65rem; font-weight: 600; color: #94a3b8; }
 
+  /* CHART */
   .chart-wrap { background: #fff; border: 1px solid #e2e8f0; border-radius: 24px; padding: 1.5rem; }
   .chart-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; flex-wrap: wrap; gap: 8px; }
   .chart-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #1e293b; display: flex; align-items: center; gap: 8px; }
   .chart-legend { display: flex; gap: 16px; font-size: 0.7rem; font-weight: 700; color: #64748b; }
   .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; }
 
+  /* ASSUMPTIONS */
   .assumptions-box { background: #fff; border: 1px solid #e2e8f0; border-radius: 24px; padding: 1.5rem; }
   .assumptions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 32px; margin-top: 1rem; }
   @media (max-width: 600px) { .assumptions-grid { grid-template-columns: 1fr; } }
@@ -87,16 +125,23 @@
   .assumption-dot { width: 6px; height: 6px; border-radius: 50%; background: #F26522; flex-shrink: 0; margin-top: 4px; }
   .assumption-text { font-size: 0.7rem; font-weight: 500; color: #64748b; line-height: 1.6; font-style: italic; }
 
-  .ai-box { background: #0f172a; color: #e2e8f0; border-radius: 28px; padding: 2rem; display: none; }
+  /* AI BOX */
+  .ai-box { background: #0f172a; color: #e2e8f0; border-radius: 28px; padding: 2rem; display: none; border: 1px solid #1e293b; }
   .ai-box.visible { display: block; }
   .ai-title { font-size: 1rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px; margin-bottom: 1rem; font-style: italic; }
   .ai-text { font-size: 0.875rem; line-height: 1.75; color: #cbd5e1; white-space: pre-wrap; }
 
-  .rate-strip { font-size: 0.65rem; color: #94a3b8; font-weight: 600; margin-top: 4px; }
+  .rate-strip { font-size: 0.65rem; color: #94a3b8; font-weight: 600; margin-top: 6px; }
 
+  /* FOOTER */
   footer { margin-top: 3rem; padding: 2rem 0; border-top: 1px solid #e2e8f0; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 1.5rem; }
-  .footer-notes p { font-size: 0.65rem; color: #94a3b8; font-weight: 500; margin-bottom: 3px; }
-  .footer-notes .copy { font-size: 0.65rem; color: #64748b; font-weight: 700; margin-top: 8px; }
+  .footer-notes { max-width: 480px; }
+  .footer-notes p { font-size: 0.65rem; color: #94a3b8; font-weight: 500; line-height: 1.7; font-style: italic; }
+  .footer-notes p a { color: #64748b; font-weight: 700; text-decoration: none; }
+  .footer-notes p a:hover { text-decoration: underline; }
+  .footer-copy { font-size: 0.65rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 8px; font-style: normal; }
+  .footer-copy a { color: #64748b; text-decoration: none; }
+  .footer-copy a:hover { text-decoration: underline; }
   .footer-right { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
   .visit-btn { display: flex; align-items: center; gap: 6px; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 8px 16px; text-decoration: none; color: #0f172a; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; transition: all 0.15s; }
   .visit-btn:hover { border-color: #F26522; color: #F26522; }
@@ -109,6 +154,7 @@
 <body>
 <div class="page">
 
+  <!-- HEADER -->
   <header>
     <div>
       <div class="logo-row">
@@ -131,6 +177,7 @@
   </header>
 
   <div class="layout">
+    <!-- INPUTS -->
     <aside>
       <div class="panel">
         <div class="panel-title">
@@ -141,18 +188,23 @@
         <div class="field">
           <label>Total Monthly Bill
             <span class="tip">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-              <span class="tip-box">Monthly bill inclusive of VAT, used to size your solar plant.</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <span class="tip-box">Enter your current monthly electricity bill. This is used to size your solar system and calculate savings.</span>
             </span>
           </label>
           <div class="input-wrap">
-            <input type="text" id="monthlyBill" value="34,000" oninput="handleBillInput(this)">
+            <input type="text" id="monthlyBill" value="34,000" oninput="handleBillInput(this)" placeholder="e.g. 34,000">
             <span class="unit-tag" id="unitTag">KES</span>
           </div>
         </div>
 
         <div class="field">
-          <label>Billing Unit</label>
+          <label>Billing Unit
+            <span class="tip">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <span class="tip-box">Choose KES for total cost or kWh for the exact energy consumed each month.</span>
+            </span>
+          </label>
           <div class="toggle-group" id="unitToggle">
             <button class="toggle-btn active" onclick="setUnit('KES',this)">KES</button>
             <button class="toggle-btn" onclick="setUnit('kWh',this)">kWh</button>
@@ -160,24 +212,43 @@
         </div>
 
         <div class="field">
-          <label>Building Type</label>
-          <select id="buildingType" onchange="handleBuildingTypeChange(this.value)">
-            <option value="Domestic">Domestic (Home)</option>
-            <option value="Commercial">Commercial (Business)</option>
-          </select>
+          <label>Building Type
+            <span class="tip">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <span class="tip-box">Domestic systems use home tariffs, while Commercial systems use business-specific time-of-use tariffs.</span>
+            </span>
+          </label>
+          <div class="select-wrap">
+            <select id="buildingType" class="custom-select" onchange="handleBuildingTypeChange(this.value)">
+              <option value="Domestic">Domestic (Home)</option>
+              <option value="Commercial">Commercial (Business)</option>
+            </select>
+          </div>
         </div>
 
         <div class="field">
-          <label>Battery Backup?</label>
-          <select id="requireBattery" onchange="handleBatteryChange(this.value)">
-            <option value="Yes">Yes (Hybrid System)</option>
-            <option value="No">No (Grid-tie Only)</option>
-          </select>
+          <label>Battery Backup?
+            <span class="tip">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <span class="tip-box">A Hybrid system includes batteries to provide backup power during grid outages and maximize solar use at night.</span>
+            </span>
+          </label>
+          <div class="select-wrap">
+            <select id="requireBattery" class="custom-select" onchange="handleBatteryChange(this.value)">
+              <option value="Yes">Yes (Hybrid System)</option>
+              <option value="No">No (Grid-tie Only)</option>
+            </select>
+          </div>
         </div>
 
         <div id="sliderSection" class="slider-box">
           <div class="slider-header">
-            <span class="slider-label">Backup Size (%)</span>
+            <span class="slider-label">Backup Size (%)
+              <span class="tip" style="vertical-align:middle;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <span class="tip-box">Determines the battery capacity. 100% sizes the battery to cover your full nightly load.</span>
+              </span>
+            </span>
             <div class="slider-val-wrap">
               <input type="number" id="backupInput" min="0" max="100" step="1" value="100" oninput="syncSlider(this.value)">
               <span>%</span>
@@ -187,8 +258,12 @@
         </div>
 
         <div class="divider">
-          <label style="display:flex;align-items:center;font-size:0.65rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">
+          <label style="display:flex;align-items:center;gap:4px;font-size:0.65rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">
             Display Currency
+            <span class="tip">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <span class="tip-box">Switch all financial metrics to your preferred currency using real-time rates.</span>
+            </span>
           </label>
           <div class="toggle-group" id="currencyToggle">
             <button class="toggle-btn active" onclick="setCurrency('KES',this)">KES</button>
@@ -205,6 +280,7 @@
       </div>
     </aside>
 
+    <!-- RESULTS -->
     <div class="results-col">
 
       <!-- SYSTEM SPECS -->
@@ -240,7 +316,7 @@
         <div class="cards">
           <div class="card">
             <div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><span class="card-label">Est. Cost + VAT</span></div>
-            <div><span class="card-val" id="r-cost" style="font-size:1.05rem">—</span> <span class="card-unit" id="r-cur1">KES</span></div>
+            <div><span class="card-val" id="r-cost" style="font-size:1.05rem">—</span> <span class="card-unit" id="u1">KES</span></div>
             <div class="card-desc">What you pay upfront</div>
           </div>
           <div class="card">
@@ -255,17 +331,17 @@
           </div>
           <div class="card">
             <div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div><span class="card-label">NPV (@10%)</span></div>
-            <div><span class="card-val" id="r-npv" style="font-size:1rem">—</span> <span class="card-unit" id="r-cur2">KES</span></div>
+            <div><span class="card-val" id="r-npv" style="font-size:1rem">—</span> <span class="card-unit" id="u2">KES</span></div>
             <div class="card-desc">Total value created today</div>
           </div>
           <div class="card">
             <div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F26522" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div><span class="card-label">Benefit-Cost Ratio</span></div>
             <div><span class="card-val" id="r-bcr">—</span> <span class="card-unit">x</span></div>
-            <div class="card-desc">Value per unit spent</div>
+            <div class="card-desc">Value generated per KES spent</div>
           </div>
           <div class="card">
             <div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div><span class="card-label">LCOE Cost</span></div>
-            <div><span class="card-val" id="r-lcoe" style="font-size:1.05rem">—</span> <span class="card-unit" id="r-cur3">/kWh</span></div>
+            <div><span class="card-val" id="r-lcoe" style="font-size:1.05rem">—</span> <span class="card-unit" id="u3">/kWh</span></div>
             <div class="card-desc">Cost per kWh over system life</div>
           </div>
           <div class="card">
@@ -275,17 +351,17 @@
           </div>
           <div class="card">
             <div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><circle cx="12" cy="12" r="8"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><span class="card-label">25-Yr Cum. Return</span></div>
-            <div><span class="card-val" id="r-cumret" style="font-size:1rem">—</span> <span class="card-unit" id="r-cur4">KES</span></div>
+            <div><span class="card-val" id="r-cumret" style="font-size:1rem">—</span> <span class="card-unit" id="u4">KES</span></div>
             <div class="card-desc">Total money back over life</div>
           </div>
           <div class="card">
             <div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><span class="card-label">Net Savings</span></div>
-            <div><span class="card-val" id="r-profit" style="font-size:1rem">—</span> <span class="card-unit" id="r-cur5">KES</span></div>
+            <div><span class="card-val" id="r-profit" style="font-size:1rem">—</span> <span class="card-unit" id="u5">KES</span></div>
             <div class="card-desc">Total savings after all costs</div>
           </div>
           <div class="card">
             <div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></div><span class="card-label">25-Yr Maint. Cost</span></div>
-            <div><span class="card-val" id="r-om" style="font-size:1rem">—</span> <span class="card-unit" id="r-cur6">KES</span></div>
+            <div><span class="card-val" id="r-om" style="font-size:1rem">—</span> <span class="card-unit" id="u6">KES</span></div>
             <div class="card-desc">Long-term operational cost</div>
           </div>
         </div>
@@ -310,7 +386,7 @@
 
       <!-- ASSUMPTIONS -->
       <div class="assumptions-box">
-        <div class="section-title">
+        <div class="section-title" style="display:flex;align-items:center;gap:6px;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F26522" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
           Technical Assumptions
         </div>
@@ -329,11 +405,11 @@
     </div>
   </div>
 
+  <!-- FOOTER -->
   <footer>
     <div class="footer-notes">
-      <p>• 1200kWh/kWp yield | 2% O&amp;M escalation | 1% degradation</p>
-      <p>• Tariffs: 23/28 KES scaled at 0.5% | 10% Discount Rate</p>
-      <p class="copy">© <span id="yr"></span> MEGATRICITY. All rights reserved.</p>
+      <p>Disclaimer: For general information only — not professional advice. <a href="https://www.megatricity.co.ke" target="_blank" rel="noopener">Megatricity.co.ke</a> accepts no liability for errors, omissions, or losses from reliance on this content. No warranties given. Consult a qualified professional.</p>
+      <p class="footer-copy">© <span id="yr"></span> <a href="https://www.megatricity.co.ke" target="_blank" rel="noopener">MEGATRICITY</a>. All rights reserved.</p>
     </div>
     <div class="footer-right">
       <a href="https://www.megatricity.co.ke" target="_blank" rel="noopener" class="visit-btn">
@@ -351,18 +427,13 @@
 <script>
 document.getElementById('yr').textContent = new Date().getFullYear();
 
-// ---- STATE ----
 const state = {
-  monthlyBill: 34000,
-  unit: 'KES',
-  buildingType: 'Domestic',
-  requireBattery: 'Yes',
-  nightLoadBackup: 100,
-  displayCurrency: 'KES',
-  rates: { USD: 130, EUR: 140 }
+  monthlyBill: 34000, unit: 'KES', buildingType: 'Domestic',
+  requireBattery: 'Yes', nightLoadBackup: 100,
+  displayCurrency: 'KES', rates: { USD: 130, EUR: 140 }
 };
 
-// ---- LIVE RATES ----
+// Live rates
 fetch('https://open.er-api.com/v6/latest/KES')
   .then(r => r.json())
   .then(d => {
@@ -370,14 +441,13 @@ fetch('https://open.er-api.com/v6/latest/KES')
       state.rates.USD = 1 / d.rates.USD;
       state.rates.EUR = 1 / d.rates.EUR;
       document.getElementById('rateStrip').textContent =
-        `Live: 1 USD = ${state.rates.USD.toFixed(1)} KES | 1 EUR = ${state.rates.EUR.toFixed(1)} KES`;
+        `Live: 1 USD ≈ ${state.rates.USD.toFixed(1)} KES | 1 EUR ≈ ${state.rates.EUR.toFixed(1)} KES`;
       recalculate();
     }
   }).catch(() => {
-    document.getElementById('rateStrip').textContent = 'Using fallback rates (USD ~130, EUR ~140)';
+    document.getElementById('rateStrip').textContent = 'Fallback: USD ~130 | EUR ~140 KES';
   });
 
-// ---- IRR ----
 function calculateIRR(cf, est = 0.1) {
   let irr = est;
   for (let i = 0; i < 100; i++) {
@@ -395,13 +465,12 @@ function calculateIRR(cf, est = 0.1) {
   return irr;
 }
 
-// ---- HANDLERS ----
 function handleBillInput(el) {
   state.monthlyBill = parseFloat(el.value.replace(/,/g, '')) || 0;
   recalculate();
 }
 document.getElementById('monthlyBill').addEventListener('blur', e => {
-  e.target.value = state.monthlyBill.toLocaleString('en-US');
+  if (state.monthlyBill > 0) e.target.value = state.monthlyBill.toLocaleString('en-US');
 });
 
 function setUnit(u, btn) {
@@ -456,15 +525,13 @@ function syncBackupInput(val) {
   recalculate();
 }
 
-// ---- CONVERSION ----
-function convert(valKES) {
+function conv(v) {
   const { displayCurrency, rates } = state;
-  if (displayCurrency === 'USD') return valKES / rates.USD;
-  if (displayCurrency === 'EUR') return valKES / rates.EUR;
-  return valKES;
+  if (displayCurrency === 'USD') return v / rates.USD;
+  if (displayCurrency === 'EUR') return v / rates.EUR;
+  return v;
 }
 
-// ---- CALCULATE ----
 function recalculate() {
   const { monthlyBill, unit, buildingType, requireBattery, nightLoadBackup } = state;
   const isComm = buildingType === 'Commercial';
@@ -486,16 +553,17 @@ function recalculate() {
   const battery = Math.ceil((uomBat * loadFactorBat / dod / days * backupQty) / 5) * 5;
   const inverterSize = Math.ceil(solarPlant / 1.25);
 
+  // REVISED: grid-tie uses 65000 KES/kWp
   const initialCapexKES = requireBattery === 'Yes'
     ? (solarPlant * 63000) + (inverterSize * 23815) + (battery * 26000)
-    : solarPlant * 63100;
+    : solarPlant * 65000;
 
   const baseOm = solarPlant * 1950;
   const yF = 1200, dr = 0.1, deg = 0.01, esc = 0.02, tEsc = 0.005;
   let totalOm = 0, gross25 = 0, pvOm = 0, pvBen = 0, pvEn = 0;
   const netAnn = [], irrFlows = [-initialCapexKES];
   const ccf = [{ year: 0, value: -initialCapexKES }];
-  let cur = -initialCapexKES;
+  let curCash = -initialCapexKES;
 
   for (let t = 0; t < 25; t++) {
     const om = baseOm * Math.pow(1 + esc, t);
@@ -505,8 +573,8 @@ function recalculate() {
     const sav = gen * tariff * Math.pow(1 + tEsc, t);
     gross25 += sav; pvBen += sav / Math.pow(1 + dr, t);
     netAnn.push(0.9 * sav);
-    cur += sav - om;
-    ccf.push({ year: t + 1, value: cur });
+    curCash += sav - om;
+    ccf.push({ year: t + 1, value: curCash });
     irrFlows.push((0.9 * sav) - om);
   }
 
@@ -523,13 +591,12 @@ function recalculate() {
   for (const v of netAnn) { cumPB += v; pbSeq.push(cumPB); if (cumPB < 0) neg++; }
   const payback = neg + (Math.abs(pbSeq[neg]) / (netAnn[neg] || 1));
 
-  const cur2 = state.displayCurrency;
-  const fmtN = v => Math.round(convert(v)).toLocaleString('en-US');
+  const c = state.displayCurrency;
+  const fmtN = v => Math.round(conv(v)).toLocaleString('en-US');
 
-  // Update cards
   setText('r-solar', solarPlant.toFixed(1));
   setText('r-inv', inverterSize.toFixed(1));
-  setText('r-dcratio', ((solarPlant / (inverterSize||1))*100).toFixed(1) + '% DC/AC Ratio');
+  setText('r-dcratio', ((solarPlant/(inverterSize||1))*100).toFixed(1) + '% DC/AC Ratio');
   setText('r-bat', battery.toFixed(1));
   setText('r-gen', Math.round(solarPlant * yF).toLocaleString());
   setText('r-cost', fmtN(initialCapexKES));
@@ -537,49 +604,44 @@ function recalculate() {
   setText('r-irr', (irr * 100).toFixed(2));
   setText('r-npv', fmtN(npv));
   setText('r-bcr', bcr.toFixed(2));
-  setText('r-lcoe', convert(lcoe).toFixed(2));
+  setText('r-lcoe', conv(lcoe).toFixed(2));
   setText('r-roi', simpleRoi.toFixed(2));
   setText('r-cumret', fmtN(gross25));
   setText('r-profit', fmtN(netProfit));
   setText('r-om', fmtN(totalOm));
 
-  // Update currency labels
-  ['r-cur1','r-cur2','r-cur3','r-cur4','r-cur5','r-cur6'].forEach((id, i) => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = i === 2 ? cur2 + '/kWh' : cur2;
-  });
+  // Currency unit labels
+  ['u1','u2','u4','u5','u6'].forEach(id => setText(id, c));
+  setText('u3', c + '/kWh');
 
-  // Assumptions
-  const isCommNow = state.buildingType === 'Commercial';
+  // Updated assumptions (revised wording from v1.2)
   const assumptions = [
     "Assumes little to no HSE equipment like walkways or guardrails",
-    "Final Quote depends on actual site condition, Energy Logging, HSE and others (Site Visit to Validate)",
-    "All calculations assume 10% discount IRR/NPV and financial calculation",
+    "Final Quote depends on actual site condition, Energy Logging, HSE and others (Schedule a site Visit)",
+    "All calculations assume 10% discount rate for IRR/NPV and other calculation",
     "Annual Specific yield: 1,200 kWh/kWp | Solar panel degradation: 1% per annum",
     "Carbon logic: 1 MWh ≈ 0.478t CO2 reduction",
-    `Assume KPLC tariffs: ${isCommNow ? "23" : "28"} KES/kWh escalated at 0.5% per annum`,
+    "Assume KPLC tariffs: 28 KES/kWh for Domestic and 23 KES/kWh for Commercial escalated at 0.5% per annum",
     "Assume O&M is 1,950 KES/kWp per annum | escalation: 2%",
-    `System assumes ${isCommNow ? "60/40 TOU split" : "100% off-grid potential"} logic`
+    "Assumed 100% offgrid in domestic & 60/40 split for TOU commercial Tariffs (High-Low rate)"
   ];
   document.getElementById('assumptionsList').innerHTML = assumptions.map(a =>
     `<div class="assumption-item"><div class="assumption-dot"></div><p class="assumption-text">${a}</p></div>`
   ).join('');
 
-  // Chart (convert CCF to display currency)
-  const displayCcf = ccf.map(d => ({ year: d.year, value: convert(d.value) }));
+  const displayCcf = ccf.map(d => ({ year: d.year, value: conv(d.value) }));
   drawChart(displayCcf, payback);
 
   window._results = {
     solarPlant: solarPlant.toFixed(1), battery: battery.toFixed(1),
     systemCost: fmtN(initialCapexKES), payback: payback.toFixed(2),
     irr: (irr*100).toFixed(2), netProfit: fmtN(netProfit),
-    buildingType: state.buildingType, displayCurrency: cur2
+    buildingType: state.buildingType, displayCurrency: c
   };
 }
 
 function setText(id, val) { const e = document.getElementById(id); if (e) e.textContent = val; }
 
-// ---- CHART ----
 function drawChart(data, paybackYear) {
   const W = 600, H = 450, PL = 80, PR = 40, PT = 80, PB = 60;
   const vals = data.map(d => d.value);
@@ -587,7 +649,7 @@ function drawChart(data, paybackYear) {
   const bigScale = Math.abs(minV) > 100000;
   const sc = bigScale ? 1000000 : 10000;
   const flr = v => Math.floor(v / sc) * sc;
-  const cl = v => Math.ceil(v / sc) * sc;
+  const cl  = v => Math.ceil(v / sc) * sc;
   const yTicks = Array.from(new Set([flr(minV), 0, cl(maxV/2), cl(maxV)])).sort((a,b)=>a-b);
   const yMin = yTicks[0] - Math.abs(yTicks[0]) * 0.1;
   const yMax = yTicks[yTicks.length-1] + Math.abs(yTicks[yTicks.length-1]) * 0.1;
@@ -636,13 +698,13 @@ function drawChart(data, paybackYear) {
     </g>
     <line x1="${pbX}" y1="${PT}" x2="${pbX}" y2="${H-PB}" stroke="#F26522" stroke-width="2" stroke-dasharray="3"/>
     <g transform="translate(${pbX},${finalY})">
+      <circle r="8" fill="#F26522" opacity="0.15"/>
       <circle r="4" fill="#F26522" stroke="white" stroke-width="2"/>
-      <text y="-14" text-anchor="middle" font-size="10" font-weight="700" fill="#F26522">ROI: ${paybackYear.toFixed(1)}y</text>
+      <text y="-24" text-anchor="middle" font-size="10" font-weight="700" fill="#F26522">Payback: ${paybackYear.toFixed(1)}y</text>
     </g>
   `;
 }
 
-// ---- QUOTE ----
 async function generateQuote() {
   const btn = document.getElementById('quoteBtn');
   const aiBox = document.getElementById('aiBox');
