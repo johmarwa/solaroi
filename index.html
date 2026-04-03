@@ -5,828 +5,497 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Solar Calculator — Megatricity</title>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8fafc; color: #0f172a; min-height: 100vh; padding: 2rem 1rem; }
-  .page { max-width: 960px; margin: 0 auto; }
-
-  /* HEADER */
-  header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 2.5rem; }
-  .logo-row { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
-  .logo-icon { background: #F26522; border-radius: 12px; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 8px 20px rgba(242,101,34,0.25); }
-  h1 { font-size: 1.75rem; font-weight: 700; color: #1e293b; }
-  .subtitle { font-size: 0.85rem; color: #64748b; font-style: italic; }
-  .subtitle a { color: #F26522; text-decoration: none; }
-  .subtitle a:hover { text-decoration: underline; }
-  .quote-badge { display: none; align-items: center; gap: 8px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 8px 16px; }
-  .quote-badge span { font-size: 0.7rem; font-weight: 700; color: #15803d; text-transform: uppercase; letter-spacing: 0.05em; }
-
-  /* LAYOUT */
-  .layout { display: grid; grid-template-columns: 320px 1fr; gap: 2rem; align-items: start; }
-  @media (max-width: 780px) { .layout { grid-template-columns: 1fr; } }
-  .chart-full { margin-top: 2rem; }
-
-  /* PANEL */
-  .panel { background: #fff; border-radius: 28px; border: 1px solid #e2e8f0; padding: 1.5rem; }
-  .panel-title { font-size: 1rem; font-weight: 600; color: #1e293b; display: flex; align-items: center; gap: 8px; margin-bottom: 1.25rem; }
-
-  /* FIELDS */
-  .field { margin-bottom: 1.1rem; }
-  .field label { display: flex; align-items: center; gap: 4px; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
-  .input-wrap { position: relative; }
-  .input-wrap input[type=text] { width: 100%; background: #f8fafc; border: 2px solid #f1f5f9; border-radius: 14px; padding: 13px 56px 13px 16px; font-size: 1rem; font-weight: 700; color: #0f172a; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
-  .input-wrap input[type=text]:focus { border-color: #F26522; box-shadow: 0 0 0 3px rgba(242,101,34,0.12); }
-  .unit-tag { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 0.85rem; font-weight: 700; color: #94a3b8; pointer-events: none; }
-
-  /* CUSTOM SELECT */
-  .select-wrap { position: relative; }
-  .select-wrap::after {
-    content: '';
-    position: absolute;
-    right: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 28px;
-    height: 28px;
-    background: #F26522;
-    border-radius: 8px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 16px;
-    pointer-events: none;
-    transition: background-color 0.15s;
-  }
-  .select-wrap:focus-within::after { background-color: #d4521a; }
-  .custom-select { 
-    width: 100%; background: #f8fafc; border: 2px solid #f1f5f9; border-radius: 14px; 
-    padding: 13px 52px 13px 16px; font-size: 0.9rem; font-weight: 700; color: #0f172a; 
-    outline: none; cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s;
-    appearance: none;
-  }
-  .custom-select:focus { border-color: #F26522; box-shadow: 0 0 0 3px rgba(242,101,34,0.12); }
-
-  /* TOGGLES */
-  .toggle-group { display: flex; background: #f1f5f9; border-radius: 14px; padding: 4px; gap: 2px; }
-  .toggle-btn { flex: 1; padding: 10px; border: none; border-radius: 10px; background: transparent; font-size: 0.8rem; font-weight: 600; color: #64748b; cursor: pointer; transition: all 0.15s; }
-  .toggle-btn.active { background: #F26522; color: #fff; box-shadow: 0 2px 8px rgba(242,101,34,0.3); }
-
-  /* SLIDER */
-  .slider-box { background: #f8fafc; border-radius: 20px; border: 2px solid #f1f5f9; padding: 1rem; margin-top: 0.5rem; }
-  .slider-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-  .slider-label { font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.08em; }
-  .slider-val-wrap { display: flex; align-items: center; gap: 4px; }
-  .slider-val-wrap input[type=number] { width: 52px; text-align: center; font-size: 0.75rem; font-weight: 800; color: #F26522; background: #fff; border: 1px solid rgba(242,101,34,0.2); border-radius: 8px; padding: 4px 6px; outline: none; -moz-appearance: textfield; }
-  .slider-val-wrap input::-webkit-outer-spin-button, .slider-val-wrap input::-webkit-inner-spin-button { -webkit-appearance: none; }
-  .slider-val-wrap span { font-size: 0.75rem; font-weight: 800; color: #F26522; }
-  input[type=range] { -webkit-appearance: none; width: 100%; height: 8px; border-radius: 999px; background: #e2e8f0; outline: none; cursor: pointer; margin: 8px 0 0; display: block; }
-  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; border-radius: 50%; background: #F26522; border: 4px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.15); cursor: pointer; margin-top: -10px; }
-  input[type=range]::-moz-range-thumb { width: 28px; height: 28px; border-radius: 50%; background: #F26522; border: 4px solid #fff; cursor: pointer; }
-  input[type=range]::-webkit-slider-runnable-track { height: 8px; border-radius: 999px; background: #e2e8f0; }
-
-  .divider { border-top: 1px solid #f1f5f9; margin: 1rem 0; padding-top: 1rem; }
-
-  /* TOOLTIP */
-  .tip { position: relative; display: inline-flex; align-items: center; margin-left: 4px; cursor: help; }
-  .tip svg { color: #94a3b8; transition: color 0.15s; }
-  .tip:hover svg { color: #F26522; }
-  .tip-box { display: none; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); margin-bottom: 8px; width: 220px; padding: 10px 12px; background: #0f172a; color: #fff; font-size: 0.7rem; border-radius: 12px; z-index: 20; text-align: center; font-weight: 400; pointer-events: none; line-height: 1.6; text-transform: none; letter-spacing: 0; }
-  .tip:hover .tip-box { display: block; }
-
-  /* CTA */
-  .cta { width: 100%; margin-top: 1.5rem; background: #0f172a; color: #fff; border: none; border-radius: 20px; padding: 16px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 10px; }
-  .cta:hover { background: #1e293b; }
-  .cta:active { transform: scale(0.98); }
-  .cta:disabled { opacity: 0.6; cursor: not-allowed; }
-
-  /* RESULTS */
-  .results-col { display: flex; flex-direction: column; gap: 2rem; }
-  .section-title { font-size: 0.7rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1rem; }
-  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
-  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 1rem; display: flex; flex-direction: column; gap: 6px; transition: box-shadow 0.15s; }
-  .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.07); }
-  .card-top { display: flex; align-items: center; gap: 8px; }
-  .card-ic { width: 32px; height: 32px; border-radius: 8px; background: #f8fafc; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .card-label { font-size: 0.75rem; font-weight: 500; color: #64748b; }
-  .card-val { font-size: 1.4rem; font-weight: 800; color: #0f172a; line-height: 1.1; }
-  .card-unit { font-size: 0.75rem; font-weight: 600; color: #94a3b8; }
-  .card-desc { font-size: 0.65rem; font-weight: 600; color: #94a3b8; }
-
-  /* CHART */
-  .chart-wrap { background: #fff; border: 1px solid #e2e8f0; border-radius: 24px; padding: 1.5rem; position: relative; }
-  .chart-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; flex-wrap: wrap; gap: 8px; }
-  .chart-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #1e293b; display: flex; align-items: center; gap: 8px; }
-  .chart-legend { display: flex; gap: 16px; font-size: 0.7rem; font-weight: 700; color: #64748b; }
-  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; }
-  #chartTooltip { position: absolute; background: #0f172a; color: #fff; border-radius: 10px; padding: 8px 12px; font-size: 0.72rem; font-weight: 700; pointer-events: none; display: none; white-space: nowrap; z-index: 10; box-shadow: 0 4px 16px rgba(0,0,0,0.2); transform: translate(-50%, -110%); }
-  #chartTooltip::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-top-color: #0f172a; }
-
-  /* ASSUMPTIONS */
-  .assumptions-box { background: #fff; border: 1px solid #e2e8f0; border-radius: 24px; padding: 1.5rem; }
-  .assumptions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 32px; margin-top: 1rem; }
-  @media (max-width: 600px) { .assumptions-grid { grid-template-columns: 1fr; } }
-  .assumptions-full { grid-template-columns: repeat(4,1fr) !important; }
-  @media (max-width: 900px) { .assumptions-full { grid-template-columns: 1fr 1fr !important; } }
-  @media (max-width: 500px) { .assumptions-full { grid-template-columns: 1fr !important; } }
-  .assumption-item { display: flex; gap: 10px; align-items: flex-start; }
-  .assumption-dot { width: 6px; height: 6px; border-radius: 50%; background: #F26522; flex-shrink: 0; margin-top: 4px; }
-  .assumption-text { font-size: 0.7rem; font-weight: 500; color: #64748b; line-height: 1.6; font-style: italic; }
-
-  /* AI BOX */
-  .ai-box { background: #0f172a; color: #e2e8f0; border-radius: 28px; padding: 2rem; display: none; border: 1px solid #1e293b; }
-  .ai-box.visible { display: block; }
-  .ai-title { font-size: 1rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px; margin-bottom: 1rem; font-style: italic; }
-  .ai-text { font-size: 0.875rem; line-height: 1.75; color: #cbd5e1; white-space: pre-wrap; }
-
-  .rate-strip { font-size: 0.65rem; color: #94a3b8; font-weight: 600; margin-top: 6px; }
-
-  /* FOOTER */
-  footer { margin-top: 3rem; padding: 2rem 0; border-top: 1px solid #e2e8f0; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 1.5rem; }
-  .footer-notes { max-width: 480px; }
-  .footer-notes p { font-size: 0.65rem; color: #94a3b8; font-weight: 500; line-height: 1.7; font-style: italic; }
-  .footer-notes p a { color: #64748b; font-weight: 700; text-decoration: none; }
-  .footer-notes p a:hover { text-decoration: underline; }
-  .footer-copy { font-size: 0.65rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 8px; font-style: normal; }
-  .footer-copy a { color: #64748b; text-decoration: none; }
-  .footer-copy a:hover { text-decoration: underline; }
-  .footer-right { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
-  .visit-btn { display: flex; align-items: center; gap: 6px; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 8px 16px; text-decoration: none; color: #0f172a; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; transition: all 0.15s; }
-  .visit-btn:hover { border-color: #F26522; color: #F26522; }
-  .version-tag { font-size: 0.65rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; display: flex; align-items: center; gap: 6px; }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .spin { display: inline-block; animation: spin 0.8s linear infinite; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f8fafc;color:#0f172a;min-height:100vh;padding:2rem 1rem}
+.page{max-width:960px;margin:0 auto}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:1rem;margin-bottom:2.5rem}
+.logo-row{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+.logo-icon{background:#F26522;border-radius:12px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 8px 20px rgba(242,101,34,.25)}
+h1{font-size:1.75rem;font-weight:700;color:#1e293b}
+.subtitle{font-size:.85rem;color:#64748b;font-style:italic}
+.subtitle a{color:#F26522;text-decoration:none}
+.subtitle a:hover{text-decoration:underline}
+.quote-badge{display:none;align-items:center;gap:8px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:8px 16px}
+.quote-badge span{font-size:.7rem;font-weight:700;color:#15803d;text-transform:uppercase;letter-spacing:.05em}
+.layout{display:grid;grid-template-columns:320px 1fr;gap:2rem;align-items:start}
+@media(max-width:780px){.layout{grid-template-columns:1fr}}
+.panel{background:#fff;border-radius:28px;border:1px solid #e2e8f0;padding:1.5rem}
+.panel-title{font-size:1rem;font-weight:600;color:#1e293b;display:flex;align-items:center;gap:8px;margin-bottom:1.25rem}
+.field{margin-bottom:1.1rem}
+.field label{display:flex;align-items:center;gap:4px;font-size:.7rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.input-wrap{position:relative}
+.input-wrap input[type=text]{width:100%;background:#f8fafc;border:2px solid #f1f5f9;border-radius:14px;padding:13px 56px 13px 16px;font-size:1rem;font-weight:700;color:#0f172a;outline:none;transition:border-color .15s}
+.input-wrap input[type=text]:focus{border-color:#F26522;box-shadow:0 0 0 3px rgba(242,101,34,.12)}
+.unit-tag{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:.85rem;font-weight:700;color:#94a3b8;pointer-events:none}
+.select-wrap{position:relative}
+.select-wrap::after{content:'';position:absolute;right:14px;top:50%;transform:translateY(-50%);width:28px;height:28px;background:#F26522;border-radius:8px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:center;background-size:16px;pointer-events:none}
+.custom-select{width:100%;background:#f8fafc;border:2px solid #f1f5f9;border-radius:14px;padding:13px 52px 13px 16px;font-size:.9rem;font-weight:700;color:#0f172a;outline:none;cursor:pointer;appearance:none;transition:border-color .15s}
+.custom-select:focus{border-color:#F26522;box-shadow:0 0 0 3px rgba(242,101,34,.12)}
+.toggle-group{display:flex;background:#f1f5f9;border-radius:14px;padding:4px;gap:2px}
+.toggle-btn{flex:1;padding:10px;border:none;border-radius:10px;background:transparent;font-size:.8rem;font-weight:600;color:#64748b;cursor:pointer;transition:all .15s}
+.toggle-btn.active{background:#F26522;color:#fff;box-shadow:0 2px 8px rgba(242,101,34,.3)}
+.slider-box{background:#f8fafc;border-radius:20px;border:2px solid #f1f5f9;padding:1rem;margin-top:.5rem}
+.slider-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.slider-label{font-size:.65rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.08em}
+.slider-val-wrap{display:flex;align-items:center;gap:4px}
+.slider-val-wrap input[type=number]{width:52px;text-align:center;font-size:.75rem;font-weight:800;color:#F26522;background:#fff;border:1px solid rgba(242,101,34,.2);border-radius:8px;padding:4px 6px;outline:none;-moz-appearance:textfield}
+.slider-val-wrap input::-webkit-outer-spin-button,.slider-val-wrap input::-webkit-inner-spin-button{-webkit-appearance:none}
+.slider-val-wrap span{font-size:.75rem;font-weight:800;color:#F26522}
+input[type=range]{-webkit-appearance:none;width:100%;height:8px;border-radius:999px;background:#e2e8f0;outline:none;cursor:pointer;margin:8px 0 0;display:block}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:#F26522;border:4px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.15);cursor:pointer;margin-top:-10px}
+input[type=range]::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:#F26522;border:4px solid #fff;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:8px;border-radius:999px;background:#e2e8f0}
+.divider{border-top:1px solid #f1f5f9;margin:1rem 0;padding-top:1rem}
+.tip{position:relative;display:inline-flex;align-items:center;margin-left:4px;cursor:help}
+.tip svg{color:#94a3b8;transition:color .15s}
+.tip:hover svg{color:#F26522}
+.tip-box{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:8px;width:200px;padding:8px 10px;background:#0f172a;color:#fff;font-size:.68rem;border-radius:10px;z-index:20;text-align:center;font-weight:400;pointer-events:none;line-height:1.6;text-transform:none;letter-spacing:0}
+.tip:hover .tip-box{display:block}
+.cta{width:100%;margin-top:1.5rem;background:#0f172a;color:#fff;border:none;border-radius:20px;padding:16px;font-size:1rem;font-weight:700;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:10px}
+.cta:hover{background:#1e293b}
+.cta:active{transform:scale(.98)}
+.results-col{display:flex;flex-direction:column;gap:2rem}
+.section-title{font-size:.7rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:1rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:1rem;display:flex;flex-direction:column;gap:6px;transition:box-shadow .15s}
+.card:hover{box-shadow:0 4px 16px rgba(0,0,0,.07)}
+.card-top{display:flex;align-items:center;gap:8px}
+.card-ic{width:32px;height:32px;border-radius:8px;background:#f8fafc;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.card-label{font-size:.75rem;font-weight:500;color:#64748b}
+.card-val{font-size:1.4rem;font-weight:800;color:#0f172a;line-height:1.1}
+.card-unit{font-size:.75rem;font-weight:600;color:#94a3b8}
+.card-desc{font-size:.65rem;font-weight:600;color:#94a3b8}
+.chart-wrap{background:#fff;border:1px solid #e2e8f0;border-radius:24px;padding:1.5rem;position:relative}
+.chart-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;flex-wrap:wrap;gap:8px}
+.chart-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#1e293b;display:flex;align-items:center;gap:8px}
+#chartTooltip{position:absolute;background:#0f172a;color:#fff;border-radius:10px;padding:8px 12px;font-size:.72rem;font-weight:700;pointer-events:none;display:none;white-space:nowrap;z-index:10;box-shadow:0 4px 16px rgba(0,0,0,.2);transform:translate(-50%,-110%)}
+#chartTooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:#0f172a}
+.assumptions-box{background:#fff;border:1px solid #e2e8f0;border-radius:24px;padding:1.5rem}
+.assumptions-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px 24px;margin-top:1rem}
+@media(max-width:900px){.assumptions-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:500px){.assumptions-grid{grid-template-columns:1fr}}
+.assumption-item{display:flex;gap:10px;align-items:flex-start}
+.assumption-dot{width:6px;height:6px;border-radius:50%;background:#F26522;flex-shrink:0;margin-top:4px}
+.assumption-text{font-size:.7rem;font-weight:500;color:#64748b;line-height:1.6;font-style:italic}
+.rate-strip{font-size:.65rem;color:#94a3b8;font-weight:600;margin-top:6px}
+footer{margin-top:3rem;padding:2rem 0;border-top:1px solid #e2e8f0;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:1.5rem}
+.footer-notes{max-width:480px}
+.footer-notes p{font-size:.65rem;color:#94a3b8;font-weight:500;line-height:1.7;font-style:italic}
+.footer-notes p a{color:#64748b;font-weight:700;text-decoration:none}
+.footer-copy{font-size:.65rem;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-top:8px;font-style:normal}
+.footer-right{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.visit-btn{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:8px 16px;text-decoration:none;color:#0f172a;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;transition:all .15s}
+.visit-btn:hover{border-color:#F26522;color:#F26522}
+.version-tag{font-size:.65rem;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:.08em;display:flex;align-items:center;gap:6px}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.65);z-index:200;align-items:center;justify-content:center;padding:1rem}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:28px;width:100%;max-width:520px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.3);animation:mIn .2s ease both}
+@keyframes mIn{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:none}}
+.mhead{background:#0f172a;padding:1.4rem 1.6rem;display:flex;align-items:center;justify-content:space-between}
+.mhead-left{display:flex;align-items:center;gap:12px}
+.mhead-info h3{font-size:1rem;font-weight:700;color:#fff}
+.mhead-info p{font-size:.68rem;color:#94a3b8;margin-top:2px;font-style:italic}
+.mclose{background:rgba(255,255,255,.1);border:none;border-radius:10px;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0}
+.mclose:hover{background:rgba(255,255,255,.2)}
+.mbody{padding:1.6rem}
+.spec-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}
+.spec-item{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:10px 12px;text-align:center}
+.spec-lbl{font-size:.58rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em}
+.spec-val{font-size:.95rem;font-weight:800;color:#0f172a;margin-top:2px}
+.spec-unit{font-size:.62rem;color:#64748b}
+.sec-head{font-size:.62rem;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.mf{margin-bottom:1rem}
+.mf label{display:block;font-size:.68rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
+.mf input{width:100%;background:#f8fafc;border:2px solid #f1f5f9;border-radius:12px;padding:12px 14px;font-size:.92rem;font-weight:600;color:#0f172a;outline:none;transition:border-color .15s}
+.mf input:focus{border-color:#F26522;box-shadow:0 0 0 3px rgba(242,101,34,.12)}
+.mf input::placeholder{color:#cbd5e1;font-weight:400}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sbtn{width:100%;margin-top:1rem;background:#F26522;color:#fff;border:none;border-radius:14px;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .15s}
+.sbtn:hover{background:#d4521a}
+.sbtn:active{transform:scale(.98)}
+.sbtn:disabled{opacity:.6;cursor:not-allowed}
+.ferr{font-size:.73rem;color:#ef4444;margin-bottom:6px;display:none;font-weight:600}
+.msuccess{display:none;padding:2.5rem 1.6rem;text-align:center}
+.msuccess.show{display:block}
+.sicon{width:64px;height:64px;background:#f0fdf4;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem}
+.stitle{font-size:1.15rem;font-weight:700;color:#0f172a;margin-bottom:8px}
+.ssub{font-size:.85rem;color:#64748b;line-height:1.6}
+.sclose{margin-top:1.5rem;background:#0f172a;color:#fff;border:none;border-radius:12px;padding:12px 32px;font-size:.9rem;font-weight:700;cursor:pointer}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{display:inline-block;animation:spin .8s linear infinite}
 </style>
 </head>
 <body>
 <div class="page">
 
-  <!-- HEADER -->
-  <header>
+<header>
+  <div>
+    <div class="logo-row">
+      <div class="logo-icon">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </div>
+      <h1>Solar Calculator</h1>
+    </div>
+    <p class="subtitle">Professional Solar Modeling &amp; Profit Analysis powered by <a href="https://www.megatricity.co.ke" target="_blank" rel="noopener">www.megatricity.co.ke</a></p>
+  </div>
+  <div id="quoteBadge" class="quote-badge">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <span id="quoteIdText"></span>
+  </div>
+</header>
+
+<div class="layout">
+  <aside>
+    <div class="panel">
+      <div class="panel-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F26522" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Investment Inputs
+      </div>
+      <div class="field">
+        <label>Total Monthly Bill<span class="tip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span class="tip-box">Monthly electricity bill inclusive of VAT, used to size your solar system.</span></span></label>
+        <div class="input-wrap">
+          <input type="text" id="monthlyBill" value="34,000" oninput="onBillInput(this)" placeholder="e.g. 34,000">
+          <span class="unit-tag" id="unitTag">KES</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Billing Unit<span class="tip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span class="tip-box">KES for currency amount or kWh for energy units.</span></span></label>
+        <div class="toggle-group" id="unitToggle">
+          <button class="toggle-btn active" onclick="setUnit('KES',this)">KES</button>
+          <button class="toggle-btn" onclick="setUnit('kWh',this)">kWh</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Building Type<span class="tip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span class="tip-box">Domestic uses home tariffs. Commercial uses business time-of-use tariffs.</span></span></label>
+        <div class="select-wrap">
+          <select id="buildingType" class="custom-select" onchange="onBuildingChange(this.value)">
+            <option value="Domestic">Domestic (Home)</option>
+            <option value="Commercial">Commercial (Business)</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Battery Backup?<span class="tip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span class="tip-box">Hybrid includes batteries for backup power and night use.</span></span></label>
+        <div class="select-wrap">
+          <select id="requireBattery" class="custom-select" onchange="onBatteryChange(this.value)">
+            <option value="Yes">Yes (Hybrid System)</option>
+            <option value="No">No (Grid-tie Only)</option>
+          </select>
+        </div>
+      </div>
+      <div id="sliderSection" class="slider-box">
+        <div class="slider-header">
+          <span class="slider-label">Backup Size (%)</span>
+          <div class="slider-val-wrap">
+            <input type="number" id="backupInput" min="0" max="100" step="1" value="100" oninput="syncSlider(this.value)">
+            <span>%</span>
+          </div>
+        </div>
+        <input type="range" id="nightLoad" min="0" max="100" step="1" value="100" oninput="syncBackup(this.value)">
+      </div>
+      <div class="divider">
+        <label style="display:flex;align-items:center;gap:4px;font-size:.65rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Display Currency</label>
+        <div class="toggle-group" id="curToggle">
+          <button class="toggle-btn active" onclick="setCur('KES',this)">KES</button>
+          <button class="toggle-btn" onclick="setCur('USD',this)">USD</button>
+          <button class="toggle-btn" onclick="setCur('EUR',this)">EUR</button>
+        </div>
+        <p class="rate-strip" id="rateStrip">Loading live rates…</p>
+      </div>
+      <button class="cta" onclick="openModal()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Get a Quote
+      </button>
+    </div>
+  </aside>
+
+  <div class="results-col">
     <div>
-      <div class="logo-row">
-        <div class="logo-icon">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-            <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-          </svg>
-        </div>
-        <h1>Solar Calculator</h1>
+      <div class="section-title">System Specs &amp; Generation</div>
+      <div class="cards">
+        <div class="card"><div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F26522" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></div><span class="card-label">Solar Plant</span></div><div><span class="card-val" id="r-solar">—</span> <span class="card-unit">kWp</span></div><div class="card-desc">DC Capacity</div></div>
+        <div class="card"><div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div><span class="card-label">Inverter</span></div><div><span class="card-val" id="r-inv">—</span> <span class="card-unit">kVA</span></div><div class="card-desc" id="r-dcratio">—</div></div>
+        <div class="card"><div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><rect x="2" y="7" width="20" height="11" rx="2"/><path d="M22 11h2v4h-2"/></svg></div><span class="card-label">Battery</span></div><div><span class="card-val" id="r-bat">—</span> <span class="card-unit">kWh</span></div><div class="card-desc">Lithium @ 90% DoD</div></div>
+        <div class="card"><div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F26522" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><span class="card-label">Year 1 Gen</span></div><div><span class="card-val" id="r-gen">—</span> <span class="card-unit">kWh</span></div><div class="card-desc">1,200 kWh/kWp pa.</div></div>
       </div>
-      <p class="subtitle">Professional Solar Modeling &amp; Profit Analysis powered by <a href="https://www.megatricity.co.ke" target="_blank" rel="noopener">www.megatricity.co.ke</a></p>
     </div>
-    <div id="quoteBadge" class="quote-badge">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-      <span id="quoteIdText"></span>
-    </div>
-  </header>
-
-  <div class="layout">
-    <!-- INPUTS -->
-    <aside>
-      <div class="panel">
-        <div class="panel-title">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F26522" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          Investment Inputs
-        </div>
-
-        <div class="field">
-          <label>Total Monthly Bill
-            <span class="tip">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-              <span class="tip-box">Enter your current monthly electricity bill. This is used to size your solar system and calculate savings.</span>
-            </span>
-          </label>
-          <div class="input-wrap">
-            <input type="text" id="monthlyBill" value="34,000" oninput="handleBillInput(this)" placeholder="e.g. 34,000">
-            <span class="unit-tag" id="unitTag">KES</span>
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Billing Unit
-            <span class="tip">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-              <span class="tip-box">Choose KES for total cost or kWh for the exact energy consumed each month.</span>
-            </span>
-          </label>
-          <div class="toggle-group" id="unitToggle">
-            <button class="toggle-btn active" onclick="setUnit('KES',this)">KES</button>
-            <button class="toggle-btn" onclick="setUnit('kWh',this)">kWh</button>
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Building Type
-            <span class="tip">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-              <span class="tip-box">Domestic systems use home tariffs, while Commercial systems use business-specific time-of-use tariffs.</span>
-            </span>
-          </label>
-          <div class="select-wrap">
-            <select id="buildingType" class="custom-select" onchange="handleBuildingTypeChange(this.value)">
-              <option value="Domestic">Domestic (Home)</option>
-              <option value="Commercial">Commercial (Business)</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Battery Backup?
-            <span class="tip">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-              <span class="tip-box">A Hybrid system includes batteries to provide backup power during grid outages and maximize solar use at night.</span>
-            </span>
-          </label>
-          <div class="select-wrap">
-            <select id="requireBattery" class="custom-select" onchange="handleBatteryChange(this.value)">
-              <option value="Yes">Yes (Hybrid System)</option>
-              <option value="No">No (Grid-tie Only)</option>
-            </select>
-          </div>
-        </div>
-
-        <div id="sliderSection" class="slider-box">
-          <div class="slider-header">
-            <span class="slider-label">Backup Size (%)
-              <span class="tip" style="vertical-align:middle;">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                <span class="tip-box">Determines the battery capacity. 100% sizes the battery to cover your full nightly load.</span>
-              </span>
-            </span>
-            <div class="slider-val-wrap">
-              <input type="number" id="backupInput" min="0" max="100" step="1" value="100" oninput="syncSlider(this.value)">
-              <span>%</span>
-            </div>
-          </div>
-          <input type="range" id="nightLoad" min="0" max="100" step="1" value="100" oninput="syncBackupInput(this.value)">
-        </div>
-
-        <div class="divider">
-          <label style="display:flex;align-items:center;gap:4px;font-size:0.65rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">
-            Display Currency
-            <span class="tip">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-              <span class="tip-box">Switch all financial metrics to your preferred currency using real-time rates.</span>
-            </span>
-          </label>
-          <div class="toggle-group" id="currencyToggle">
-            <button class="toggle-btn active" onclick="setCurrency('KES',this)">KES</button>
-            <button class="toggle-btn" onclick="setCurrency('USD',this)">USD</button>
-            <button class="toggle-btn" onclick="setCurrency('EUR',this)">EUR</button>
-          </div>
-          <p class="rate-strip" id="rateStrip">Loading live rates…</p>
-        </div>
-
-        <button class="cta" id="quoteBtn" onclick="generateQuote()">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-          Get a Quote
-        </button>
+    <div>
+      <div class="section-title">Economic Performance</div>
+      <div class="cards">
+        <div class="card"><div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><span class="card-label">Est. Cost + VAT</span></div><div><span class="card-val" id="r-cost" style="font-size:1.05rem">—</span> <span class="card-unit" id="u1">KES</span></div><div class="card-desc">What you pay upfront</div></div>
+        <div class="card"><div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span class="card-label">Payback</span></div><div><span class="card-val" id="r-pb">—</span> <span class="card-unit">Years</span></div><div class="card-desc">When you break even</div></div>
+        <div class="card"><div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg></div><span class="card-label">IRR</span></div><div><span class="card-val" id="r-irr">—</span> <span class="card-unit">%</span></div><div class="card-desc">Annual return on investment</div></div>
+        <div class="card"><div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div><span class="card-label">NPV (@10%)</span></div><div><span class="card-val" id="r-npv" style="font-size:1rem">—</span> <span class="card-unit" id="u2">KES</span></div><div class="card-desc">Total value created today</div></div>
+        <div class="card"><div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F26522" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div><span class="card-label">Benefit-Cost Ratio</span></div><div><span class="card-val" id="r-bcr">—</span> <span class="card-unit">x</span></div><div class="card-desc">Value per unit spent</div></div>
+        <div class="card"><div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div><span class="card-label">LCOE</span></div><div><span class="card-val" id="r-lcoe" style="font-size:1.05rem">—</span> <span class="card-unit" id="u3">/kWh</span></div><div class="card-desc">Cost per kWh over life</div></div>
+        <div class="card"><div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div><span class="card-label">Simple ROI</span></div><div><span class="card-val" id="r-roi">—</span> <span class="card-unit">%</span></div><div class="card-desc">Total return vs cost</div></div>
+        <div class="card"><div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><circle cx="12" cy="12" r="8"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><span class="card-label">25-Yr Cum. Return</span></div><div><span class="card-val" id="r-cumret" style="font-size:1rem">—</span> <span class="card-unit" id="u4">KES</span></div><div class="card-desc">Total money back</div></div>
+        <div class="card"><div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><span class="card-label">Net Savings</span></div><div><span class="card-val" id="r-profit" style="font-size:1rem">—</span> <span class="card-unit" id="u5">KES</span></div><div class="card-desc">After all costs</div></div>
+        <div class="card"><div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></div><span class="card-label">25-Yr Maint.</span></div><div><span class="card-val" id="r-om" style="font-size:1rem">—</span> <span class="card-unit" id="u6">KES</span></div><div class="card-desc">Operational cost</div></div>
       </div>
-    </aside>
+    </div>
+  </div>
+</div>
 
-    <!-- RESULTS -->
-    <div class="results-col">
-
-      <!-- SYSTEM SPECS -->
+<div style="margin-top:2rem">
+  <div class="chart-wrap">
+    <div class="chart-header">
       <div>
-        <div class="section-title">System Specs &amp; Generation</div>
-        <div class="cards">
-          <div class="card">
-            <div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F26522" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></div><span class="card-label">Solar Plant</span></div>
-            <div><span class="card-val" id="r-solar">—</span> <span class="card-unit">kWp</span></div>
-            <div class="card-desc">DC Capacity</div>
-          </div>
-          <div class="card">
-            <div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div><span class="card-label">Inverter</span></div>
-            <div><span class="card-val" id="r-inv">—</span> <span class="card-unit">kVA</span></div>
-            <div class="card-desc" id="r-dcratio">—</div>
-          </div>
-          <div class="card">
-            <div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><rect x="2" y="7" width="20" height="11" rx="2"/><path d="M22 11h2v4h-2"/></svg></div><span class="card-label">Battery</span></div>
-            <div><span class="card-val" id="r-bat">—</span> <span class="card-unit">kWh</span></div>
-            <div class="card-desc">Lithium @ 90% DoD</div>
-          </div>
-          <div class="card">
-            <div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F26522" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><span class="card-label">Year 1 Gen</span></div>
-            <div><span class="card-val" id="r-gen">—</span> <span class="card-unit">kWh</span></div>
-            <div class="card-desc">1,200 kWh/kWp Yield pa.</div>
-          </div>
+        <div class="chart-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F26522" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Lifetime Cash Flow (<span id="chartCurLabel">KES</span>)
         </div>
+        <p id="chartInsight" style="font-size:.7rem;color:#64748b;margin-top:5px;font-style:italic;font-weight:500">Calculating…</p>
       </div>
-
-      <!-- ECONOMIC -->
-      <div>
-        <div class="section-title">Economic Performance</div>
-        <div class="cards">
-          <div class="card">
-            <div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><span class="card-label">Est. Cost + VAT</span></div>
-            <div><span class="card-val" id="r-cost" style="font-size:1.05rem">—</span> <span class="card-unit" id="u1">KES</span></div>
-            <div class="card-desc">What you pay upfront</div>
-          </div>
-          <div class="card">
-            <div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span class="card-label">Payback</span></div>
-            <div><span class="card-val" id="r-pb">—</span> <span class="card-unit">Years</span></div>
-            <div class="card-desc">When you break even</div>
-          </div>
-          <div class="card">
-            <div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg></div><span class="card-label">IRR</span></div>
-            <div><span class="card-val" id="r-irr">—</span> <span class="card-unit">%</span></div>
-            <div class="card-desc">Annual return on investment</div>
-          </div>
-          <div class="card">
-            <div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div><span class="card-label">NPV (@10%)</span></div>
-            <div><span class="card-val" id="r-npv" style="font-size:1rem">—</span> <span class="card-unit" id="u2">KES</span></div>
-            <div class="card-desc">Total value created today</div>
-          </div>
-          <div class="card">
-            <div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F26522" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div><span class="card-label">Benefit-Cost Ratio</span></div>
-            <div><span class="card-val" id="r-bcr">—</span> <span class="card-unit">x</span></div>
-            <div class="card-desc">Value generated per KES spent</div>
-          </div>
-          <div class="card">
-            <div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div><span class="card-label">LCOE Cost</span></div>
-            <div><span class="card-val" id="r-lcoe" style="font-size:1.05rem">—</span> <span class="card-unit" id="u3">/kWh</span></div>
-            <div class="card-desc">Cost per kWh over system life</div>
-          </div>
-          <div class="card">
-            <div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div><span class="card-label">Simple ROI</span></div>
-            <div><span class="card-val" id="r-roi">—</span> <span class="card-unit">%</span></div>
-            <div class="card-desc">Total return relative to cost</div>
-          </div>
-          <div class="card">
-            <div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><circle cx="12" cy="12" r="8"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><span class="card-label">25-Yr Cum. Return</span></div>
-            <div><span class="card-val" id="r-cumret" style="font-size:1rem">—</span> <span class="card-unit" id="u4">KES</span></div>
-            <div class="card-desc">Total money back over life</div>
-          </div>
-          <div class="card">
-            <div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><span class="card-label">Net Savings</span></div>
-            <div><span class="card-val" id="r-profit" style="font-size:1rem">—</span> <span class="card-unit" id="u5">KES</span></div>
-            <div class="card-desc">Total savings after all costs</div>
-          </div>
-          <div class="card">
-            <div class="card-top"><div class="card-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></div><span class="card-label">25-Yr Maint. Cost</span></div>
-            <div><span class="card-val" id="r-om" style="font-size:1rem">—</span> <span class="card-unit" id="u6">KES</span></div>
-            <div class="card-desc">Long-term operational cost</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- AI BOX -->
-      <div class="ai-box" id="aiBox">
-        <div class="ai-title">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F26522" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          Executive Analysis
-        </div>
-        <p class="ai-text" id="aiText"></p>
-      </div>
-
     </div>
+    <div id="chartTooltip"></div>
+    <svg id="cashFlowChart" viewBox="0 0 900 490" style="width:100%;height:auto;overflow:visible">
+      <text x="450" y="245" text-anchor="middle" fill="#94a3b8" font-size="13">Calculating…</text>
+    </svg>
   </div>
+</div>
 
-  <!-- FULL WIDTH CHART -->
-  <div class="chart-full">
-    <div class="chart-wrap" style="position:relative;">
-      <div class="chart-header">
-        <div>
-          <div class="chart-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F26522" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-            Lifetime Cash Flow (<span id="chartCurLabel">KES</span>)
-          </div>
-          <p id="chartInsight" style="font-size:0.7rem;color:#64748b;margin-top:5px;font-style:italic;font-weight:500;">Calculating system projections…</p>
-        </div>
-      </div>
-      <div id="chartTooltip"></div>
-      <svg id="cashFlowChart" viewBox="0 0 900 490" style="width:100%;height:auto;overflow:visible;">
-        <text x="450" y="245" text-anchor="middle" fill="#94a3b8" font-size="13">Calculating…</text>
-      </svg>
+<div style="margin-top:2rem">
+  <div class="assumptions-box">
+    <div class="section-title" style="display:flex;align-items:center;gap:6px">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F26522" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Technical Assumptions
     </div>
+    <div class="assumptions-grid" id="assumptionsList"></div>
   </div>
+</div>
 
-  <!-- FULL WIDTH ASSUMPTIONS -->
-  <div style="margin-top:2rem;">
-    <div class="assumptions-box">
-      <div class="section-title" style="display:flex;align-items:center;gap:6px;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F26522" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        Technical Assumptions
-      </div>
-      <div class="assumptions-grid assumptions-full" id="assumptionsList"></div>
-    </div>
+<footer>
+  <div class="footer-notes">
+    <p>Disclaimer: For general information only — not professional advice. <a href="https://www.megatricity.co.ke" target="_blank" rel="noopener">Megatricity.co.ke</a> accepts no liability for errors, omissions, or losses from reliance on this content. Consult a qualified professional.</p>
+    <p class="footer-copy">&#169; <span id="yr"></span> <a href="https://www.megatricity.co.ke" target="_blank" rel="noopener">MEGATRICITY</a>. All rights reserved.</p>
   </div>
-
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-notes">
-      <p>Disclaimer: For general information only — not professional advice. <a href="https://www.megatricity.co.ke" target="_blank" rel="noopener">Megatricity.co.ke</a> accepts no liability for errors, omissions, or losses from reliance on this content. No warranties given. Consult a qualified professional.</p>
-      <p class="footer-copy">© <span id="yr"></span> <a href="https://www.megatricity.co.ke" target="_blank" rel="noopener">MEGATRICITY</a>. All rights reserved.</p>
-    </div>
-    <div class="footer-right">
-      <a href="https://www.megatricity.co.ke" target="_blank" rel="noopener" class="visit-btn">
-        Visit Website
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-      </a>
-      <div class="version-tag">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        Solar Calculator v1.2
-      </div>
-    </div>
-  </footer>
+  <div class="footer-right">
+    <a href="https://www.megatricity.co.ke" target="_blank" rel="noopener" class="visit-btn">Visit Website <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+    <div class="version-tag"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Solar Calculator v2.2</div>
+  </div>
+</footer>
 
 </div>
+
+<div class="modal-overlay" id="quoteModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="mhead">
+      <div class="mhead-left">
+        <div class="logo-icon" style="width:38px;height:38px;border-radius:10px;box-shadow:none">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </div>
+        <div class="mhead-info">
+          <h3>Request a Conditional Quote</h3>
+          <p>Your estimate is ready &#8212; we will follow up within 24 hrs</p>
+        </div>
+      </div>
+      <button class="mclose" onclick="closeModal()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="mbody" id="mFormBody">
+      <p class="sec-head">Your System Estimate</p>
+      <div class="spec-row">
+        <div class="spec-item"><div class="spec-lbl">Solar Plant</div><div><span class="spec-val" id="ms-solar">&#8212;</span> <span class="spec-unit">kWp</span></div></div>
+        <div class="spec-item"><div class="spec-lbl">Inverter</div><div><span class="spec-val" id="ms-inv">&#8212;</span> <span class="spec-unit">kVA</span></div></div>
+        <div class="spec-item"><div class="spec-lbl">Battery</div><div><span class="spec-val" id="ms-bat">&#8212;</span> <span class="spec-unit">kWh</span></div></div>
+      </div>
+      <div class="spec-row" style="margin-top:8px">
+        <div class="spec-item"><div class="spec-lbl">Est. Cost + VAT</div><div><span class="spec-val" id="ms-cost" style="font-size:.82rem">&#8212;</span> <span class="spec-unit" id="ms-cur">KES</span></div></div>
+        <div class="spec-item"><div class="spec-lbl">Payback</div><div><span class="spec-val" id="ms-pb">&#8212;</span> <span class="spec-unit">yrs</span></div></div>
+        <div class="spec-item"><div class="spec-lbl">IRR</div><div><span class="spec-val" id="ms-irr">&#8212;</span> <span class="spec-unit">%</span></div></div>
+      </div>
+      <div style="border-top:1px solid #f1f5f9;margin:1.2rem 0 1rem"></div>
+      <p class="sec-head">Your Contact Details</p>
+      <div class="mf"><label>Full Name *</label><input type="text" id="f-name" placeholder="e.g. John Kamau"></div>
+      <div class="form-row">
+        <div class="mf"><label>Mobile Number *</label><input type="tel" id="f-phone" placeholder="e.g. 0712 345 678"></div>
+        <div class="mf"><label>Email Address *</label><input type="email" id="f-email" placeholder="you@email.com"></div>
+      </div>
+      <p class="ferr" id="formErr"></p>
+      <button class="sbtn" id="submitBtn" onclick="submitQuote()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Send Quote Request
+      </button>
+      <p style="font-size:.63rem;color:#94a3b8;text-align:center;margin-top:8px">Sent securely to Megatricity &#8212; never shared with third parties.</p>
+    </div>
+    <div class="msuccess" id="mSuccess">
+      <div class="sicon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+      <div class="stitle">Quote Request Sent!</div>
+      <p class="ssub">Thank you! Your system estimate has been sent to <strong>Megatricity</strong>.<br>A solar consultant will contact you within <strong>24 hours</strong>.</p>
+      <button class="sclose" onclick="closeModal()">Done</button>
+    </div>
+  </div>
+</div>
+
 <script>
 document.getElementById('yr').textContent = new Date().getFullYear();
 
-const state = {
-  monthlyBill: 34000, unit: 'KES', buildingType: 'Domestic',
-  requireBattery: 'Yes', nightLoadBackup: 100,
-  displayCurrency: 'KES', rates: { USD: 130, EUR: 140 }
-};
+var S = { bill:34000, unit:'KES', bldg:'Domestic', battery:'Yes', backup:100, cur:'KES', rates:{USD:130,EUR:140} };
+var R = {};
 
-// Live rates
-fetch('https://open.er-api.com/v6/latest/KES')
-  .then(r => r.json())
-  .then(d => {
-    if (d && d.rates) {
-      state.rates.USD = 1 / d.rates.USD;
-      state.rates.EUR = 1 / d.rates.EUR;
-      document.getElementById('rateStrip').textContent =
-        `Live: 1 USD ≈ ${state.rates.USD.toFixed(1)} KES | 1 EUR ≈ ${state.rates.EUR.toFixed(1)} KES`;
-      recalculate();
-    }
-  }).catch(() => {
-    document.getElementById('rateStrip').textContent = 'Fallback: USD ~130 | EUR ~140 KES';
-  });
+fetch('https://open.er-api.com/v6/latest/KES').then(function(r){return r.json()}).then(function(d){
+  if(d&&d.rates){ S.rates.USD=1/d.rates.USD; S.rates.EUR=1/d.rates.EUR;
+    document.getElementById('rateStrip').textContent='Live: 1 USD = '+S.rates.USD.toFixed(1)+' KES | 1 EUR = '+S.rates.EUR.toFixed(1)+' KES';
+    calc(); }
+}).catch(function(){ document.getElementById('rateStrip').textContent='Fallback: USD ~130 | EUR ~140 KES'; });
 
-function calculateIRR(cf, est = 0.1) {
-  let irr = est;
-  for (let i = 0; i < 100; i++) {
-    let npv = 0, dNPV = 0;
-    for (let t = 0; t < cf.length; t++) {
-      const d = Math.pow(1 + irr, t);
-      npv += cf[t] / d;
-      dNPV -= (t * cf[t]) / Math.pow(1 + irr, t + 1);
-    }
-    if (Math.abs(dNPV) < 1e-10) break;
-    const n = irr - npv / dNPV;
-    if (Math.abs(n - irr) < 1e-7) return n;
-    irr = n;
+function irr(cf){
+  var r=0.1;
+  for(var i=0;i<100;i++){
+    var n=0,d=0;
+    for(var t=0;t<cf.length;t++){var p=Math.pow(1+r,t);n+=cf[t]/p;d-=t*cf[t]/Math.pow(1+r,t+1);}
+    if(Math.abs(d)<1e-10)break; var nr=r-n/d; if(Math.abs(nr-r)<1e-7)return nr; r=nr;
   }
-  return irr;
+  return r;
 }
+function cv(v){ if(S.cur==='USD')return v/S.rates.USD; if(S.cur==='EUR')return v/S.rates.EUR; return v; }
+function fmt(v){ return Math.round(cv(v)).toLocaleString('en-US'); }
+function fv(v){ var a=Math.abs(v); if(a>=1e6)return (v/1e6).toFixed(2)+'M'; if(a>=1000)return (v/1000).toFixed(1)+'K'; return v.toFixed(0); }
+function set(id,v){ var e=document.getElementById(id); if(e)e.textContent=v; }
 
-function handleBillInput(el) {
-  state.monthlyBill = parseFloat(el.value.replace(/,/g, '')) || 0;
-  recalculate();
+function onBillInput(el){ S.bill=parseFloat(el.value.replace(/,/g,''))||0; calc(); }
+document.getElementById('monthlyBill').addEventListener('blur',function(e){ if(S.bill>0)e.target.value=S.bill.toLocaleString('en-US'); });
+function setUnit(u,b){ S.unit=u; document.getElementById('unitTag').textContent=u; document.querySelectorAll('#unitToggle .toggle-btn').forEach(function(x){x.classList.remove('active');}); b.classList.add('active'); calc(); }
+function setCur(c,b){ S.cur=c; document.querySelectorAll('#curToggle .toggle-btn').forEach(function(x){x.classList.remove('active');}); b.classList.add('active'); document.getElementById('chartCurLabel').textContent=c; calc(); }
+function onBuildingChange(t){
+  S.bldg=t;
+  if(t==='Commercial'){ S.bill=200000;S.battery='No';S.backup=0; document.getElementById('requireBattery').value='No'; document.getElementById('nightLoad').value=0; document.getElementById('backupInput').value=0; document.getElementById('sliderSection').style.display='none'; }
+  else { S.bill=34000;S.battery='Yes';S.backup=100; document.getElementById('requireBattery').value='Yes'; document.getElementById('nightLoad').value=100; document.getElementById('backupInput').value=100; document.getElementById('sliderSection').style.display='block'; }
+  document.getElementById('monthlyBill').value=S.bill.toLocaleString('en-US'); calc();
 }
-document.getElementById('monthlyBill').addEventListener('blur', e => {
-  if (state.monthlyBill > 0) e.target.value = state.monthlyBill.toLocaleString('en-US');
-});
+function onBatteryChange(v){ S.battery=v; document.getElementById('sliderSection').style.display=v==='Yes'?'block':'none'; calc(); }
+function syncSlider(v){ S.backup=Math.min(100,Math.max(0,parseInt(v)||0)); document.getElementById('nightLoad').value=S.backup; calc(); }
+function syncBackup(v){ S.backup=parseInt(v)||0; document.getElementById('backupInput').value=S.backup; calc(); }
 
-function setUnit(u, btn) {
-  state.unit = u;
-  document.getElementById('unitTag').textContent = u;
-  document.querySelectorAll('#unitToggle .toggle-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  recalculate();
-}
-
-function setCurrency(c, btn) {
-  state.displayCurrency = c;
-  document.querySelectorAll('#currencyToggle .toggle-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('chartCurLabel').textContent = c;
-  recalculate();
-}
-
-function handleBuildingTypeChange(type) {
-  state.buildingType = type;
-  if (type === 'Commercial') {
-    state.monthlyBill = 200000; state.requireBattery = 'No'; state.nightLoadBackup = 0;
-    document.getElementById('requireBattery').value = 'No';
-    document.getElementById('nightLoad').value = 0;
-    document.getElementById('backupInput').value = 0;
-    document.getElementById('sliderSection').style.display = 'none';
-  } else {
-    state.monthlyBill = 34000; state.requireBattery = 'Yes'; state.nightLoadBackup = 100;
-    document.getElementById('requireBattery').value = 'Yes';
-    document.getElementById('nightLoad').value = 100;
-    document.getElementById('backupInput').value = 100;
-    document.getElementById('sliderSection').style.display = 'block';
+function calc(){
+  var isC=S.bldg==='Commercial', tr=isC?23:28, dy=isC?26:30;
+  var dod=.9,psh=3.5,eff=.8,bt=.875, bq=S.battery==='Yes'?S.backup/100:0;
+  var uK=S.unit==='kWh'?S.bill:(S.bill*bt)/tr, dK=uK/dy;
+  var hr=isC?.6:.4, lfs=isC?.4:.85;
+  var base=(dK*hr)/(psh*eff), ess=(dK*lfs*bq)/dod;
+  var solar=base+(S.battery==='Yes'?ess/psh:0);
+  var lfb=isC?.4:.6, uB=S.unit==='kWh'?S.bill:S.bill/tr;
+  var bat=Math.ceil((uB*lfb/dod/dy)*bq/5)*5;
+  var inv=Math.ceil(solar/1.25);
+  var capex=S.battery==='Yes'?(solar*63000)+(inv*23815)+(bat*26000):solar*65000;
+  var om=solar*1950, yF=1200, dr=.1, deg=.01, esc=.02, te=.005;
+  var tOm=0,g25=0,pvOm=0,pvB=0,pvE=0, na=[],irf=[-capex], ccf=[{y:0,v:-capex}], cur=-capex;
+  for(var t=0;t<25;t++){
+    var yo=om*Math.pow(1+esc,t); tOm+=yo; pvOm+=yo/Math.pow(1+dr,t);
+    var yg=solar*yF*Math.pow(1-deg,t); pvE+=yg/Math.pow(1+dr,t);
+    var ys=yg*tr*Math.pow(1+te,t); g25+=ys; pvB+=ys/Math.pow(1+dr,t);
+    na.push(.9*ys); cur+=ys-yo; ccf.push({y:t+1,v:cur}); irf.push(.9*ys-yo);
   }
-  document.getElementById('monthlyBill').value = state.monthlyBill.toLocaleString('en-US');
-  recalculate();
+  var np=g25-(capex+tOm), pvc=capex+pvOm, npv=pvB-pvc, bcr=pvB/pvc, roi=(np/capex)*100, lcoe=pvc/pvE;
+  var irrV=irr(irf), cumPB=-capex, neg=0, pbS=[-capex];
+  for(var i=0;i<na.length;i++){cumPB+=na[i];pbS.push(cumPB);if(cumPB<0)neg++;}
+  var pb=neg+(Math.abs(pbS[neg])/(na[neg]||1)), c=S.cur;
+  set('r-solar',solar.toFixed(1)); set('r-inv',inv.toFixed(1));
+  set('r-dcratio',((solar/(inv||1))*100).toFixed(1)+'% DC/AC Ratio');
+  set('r-bat',bat.toFixed(1)); set('r-gen',Math.round(solar*yF).toLocaleString());
+  set('r-cost',fmt(capex)); set('r-pb',pb.toFixed(2)); set('r-irr',(irrV*100).toFixed(2));
+  set('r-npv',fmt(npv)); set('r-bcr',bcr.toFixed(2)); set('r-lcoe',cv(lcoe).toFixed(2));
+  set('r-roi',roi.toFixed(2)); set('r-cumret',fmt(g25)); set('r-profit',fmt(np)); set('r-om',fmt(tOm));
+  ['u1','u2','u4','u5','u6'].forEach(function(id){set(id,c);}); set('u3',c+'/kWh');
+  var isCC=S.bldg==='Commercial';
+  var asmps=['Assumes little to no HSE equipment like walkways or guardrails',
+    'Final Quote depends on actual site condition, Energy Logging, HSE and others (Schedule a site Visit)',
+    'All calculations assume 10% discount rate for IRR/NPV and other calculations',
+    'Annual Specific yield: 1,200 kWh/kWp | Solar panel degradation: 1% per annum',
+    'Carbon logic: 1 MWh approx 0.478t CO2 reduction',
+    'KPLC tariffs: 28 KES/kWh Domestic, 23 KES/kWh Commercial escalated at 0.5% pa',
+    'O&M: 1,950 KES/kWp per annum | escalation: 2%',
+    isCC?'60/40 TOU split for commercial tariffs':'100% off-grid potential assumed for domestic'];
+  document.getElementById('assumptionsList').innerHTML=asmps.map(function(a){
+    return '<div class="assumption-item"><div class="assumption-dot"></div><p class="assumption-text">'+a+'</p></div>';
+  }).join('');
+  R={solar:solar.toFixed(1),inv:inv.toFixed(1),bat:bat.toFixed(1),
+     gen:Math.round(solar*yF).toLocaleString(),cost:fmt(capex),pb:pb.toFixed(2),
+     irrV:(irrV*100).toFixed(2),npv:fmt(npv),profit:fmt(np),lcoe:cv(lcoe).toFixed(2),cur:c,
+     bldg:S.bldg,hybr:S.battery==='Yes'?'Hybrid':'Grid-tie'};
+  document.getElementById('chartInsight').textContent='Breaks even in '+pb.toFixed(1)+' yrs  \u00b7  IRR '+(irrV*100).toFixed(1)+'%  \u00b7  25-yr net: '+c+' '+fv(cv(np));
+  drawChart(ccf.map(function(d){return{y:d.y,v:cv(d.v)};}), pb);
 }
 
-function handleBatteryChange(val) {
-  state.requireBattery = val;
-  document.getElementById('sliderSection').style.display = val === 'Yes' ? 'block' : 'none';
-  recalculate();
-}
-
-function syncSlider(val) {
-  state.nightLoadBackup = Math.min(100, Math.max(0, parseInt(val) || 0));
-  document.getElementById('nightLoad').value = state.nightLoadBackup;
-  recalculate();
-}
-function syncBackupInput(val) {
-  state.nightLoadBackup = parseInt(val) || 0;
-  document.getElementById('backupInput').value = state.nightLoadBackup;
-  recalculate();
-}
-
-function conv(v) {
-  const { displayCurrency, rates } = state;
-  if (displayCurrency === 'USD') return v / rates.USD;
-  if (displayCurrency === 'EUR') return v / rates.EUR;
-  return v;
-}
-
-function recalculate() {
-  const { monthlyBill, unit, buildingType, requireBattery, nightLoadBackup } = state;
-  const isComm = buildingType === 'Commercial';
-  const tariff = isComm ? 23 : 28;
-  const days = isComm ? 26 : 30;
-  const dod = 0.9, psh = 3.5, eff = 0.8, beforeTax = 0.875;
-  const backupQty = requireBattery === 'Yes' ? nightLoadBackup / 100 : 0;
-
-  const uomKwh = unit === 'kWh' ? monthlyBill : (monthlyBill * beforeTax) / tariff;
-  const dailyKwh = uomKwh / days;
-  const highrateSolar = isComm ? 0.6 : 0.4;
-  const loadFactorSolar = isComm ? 0.4 : 0.85;
-  const baseSolar = (dailyKwh * highrateSolar) / (psh * eff);
-  const essCapSolar = (dailyKwh * loadFactorSolar * backupQty) / dod;
-  const solarPlant = baseSolar + (requireBattery === 'Yes' ? essCapSolar / psh : 0);
-
-  const loadFactorBat = isComm ? 0.4 : 0.6;
-  const uomBat = unit === 'kWh' ? monthlyBill : monthlyBill / tariff;
-  const battery = Math.ceil((uomBat * loadFactorBat / dod / days * backupQty) / 5) * 5;
-  const inverterSize = Math.ceil(solarPlant / 1.25);
-
-  // REVISED: grid-tie uses 65000 KES/kWp
-  const initialCapexKES = requireBattery === 'Yes'
-    ? (solarPlant * 63000) + (inverterSize * 23815) + (battery * 26000)
-    : solarPlant * 65000;
-
-  const baseOm = solarPlant * 1950;
-  const yF = 1200, dr = 0.1, deg = 0.01, esc = 0.02, tEsc = 0.005;
-  let totalOm = 0, gross25 = 0, pvOm = 0, pvBen = 0, pvEn = 0;
-  const netAnn = [], irrFlows = [-initialCapexKES];
-  const ccf = [{ year: 0, value: -initialCapexKES }];
-  let curCash = -initialCapexKES;
-
-  for (let t = 0; t < 25; t++) {
-    const om = baseOm * Math.pow(1 + esc, t);
-    totalOm += om; pvOm += om / Math.pow(1 + dr, t);
-    const gen = solarPlant * yF * Math.pow(1 - deg, t);
-    pvEn += gen / Math.pow(1 + dr, t);
-    const sav = gen * tariff * Math.pow(1 + tEsc, t);
-    gross25 += sav; pvBen += sav / Math.pow(1 + dr, t);
-    netAnn.push(0.9 * sav);
-    curCash += sav - om;
-    ccf.push({ year: t + 1, value: curCash });
-    irrFlows.push((0.9 * sav) - om);
-  }
-
-  const netProfit = gross25 - (initialCapexKES + totalOm);
-  const pvCosts = initialCapexKES + pvOm;
-  const npv = pvBen - pvCosts;
-  const bcr = pvBen / pvCosts;
-  const simpleRoi = (netProfit / initialCapexKES) * 100;
-  const lcoe = pvCosts / pvEn;
-  const irr = calculateIRR(irrFlows);
-
-  let cumPB = -initialCapexKES, neg = 0;
-  const pbSeq = [-initialCapexKES];
-  for (const v of netAnn) { cumPB += v; pbSeq.push(cumPB); if (cumPB < 0) neg++; }
-  const payback = neg + (Math.abs(pbSeq[neg]) / (netAnn[neg] || 1));
-
-  const c = state.displayCurrency;
-  const fmtN = v => Math.round(conv(v)).toLocaleString('en-US');
-
-  setText('r-solar', solarPlant.toFixed(1));
-  setText('r-inv', inverterSize.toFixed(1));
-  setText('r-dcratio', ((solarPlant/(inverterSize||1))*100).toFixed(1) + '% DC/AC Ratio');
-  setText('r-bat', battery.toFixed(1));
-  setText('r-gen', Math.round(solarPlant * yF).toLocaleString());
-  setText('r-cost', fmtN(initialCapexKES));
-  setText('r-pb', payback.toFixed(2));
-  setText('r-irr', (irr * 100).toFixed(2));
-  setText('r-npv', fmtN(npv));
-  setText('r-bcr', bcr.toFixed(2));
-  setText('r-lcoe', conv(lcoe).toFixed(2));
-  setText('r-roi', simpleRoi.toFixed(2));
-  setText('r-cumret', fmtN(gross25));
-  setText('r-profit', fmtN(netProfit));
-  setText('r-om', fmtN(totalOm));
-
-  // Currency unit labels
-  ['u1','u2','u4','u5','u6'].forEach(id => setText(id, c));
-  setText('u3', c + '/kWh');
-
-  // Updated assumptions (revised wording from v1.2)
-  const assumptions = [
-    "Assumes little to no HSE equipment like walkways or guardrails",
-    "Final Quote depends on actual site condition, Energy Logging, HSE and others (Schedule a site Visit)",
-    "All calculations assume 10% discount rate for IRR/NPV and other calculation",
-    "Annual Specific yield: 1,200 kWh/kWp | Solar panel degradation: 1% per annum",
-    "Carbon logic: 1 MWh ≈ 0.478t CO2 reduction",
-    "Assume KPLC tariffs: 28 KES/kWh for Domestic and 23 KES/kWh for Commercial escalated at 0.5% per annum",
-    "Assume O&M is 1,950 KES/kWp per annum | escalation: 2%",
-    "Assumed 100% offgrid in domestic & 60/40 split for TOU commercial Tariffs (High-Low rate)"
-  ];
-  document.getElementById('assumptionsList').innerHTML = assumptions.map(a =>
-    `<div class="assumption-item"><div class="assumption-dot"></div><p class="assumption-text">${a}</p></div>`
-  ).join('');
-
-  const displayCcf = ccf.map(d => ({ year: d.year, value: conv(d.value) }));
-  drawChart(displayCcf, payback);
-
-  window._results = {
-    solarPlant: solarPlant.toFixed(1), battery: battery.toFixed(1),
-    systemCost: fmtN(initialCapexKES), payback: payback.toFixed(2),
-    irr: (irr*100).toFixed(2), netProfit: fmtN(netProfit),
-    buildingType: state.buildingType, displayCurrency: c
-  };
-}
-
-function setText(id, val) { const e = document.getElementById(id); if (e) e.textContent = val; }
-
-function drawChart(data, paybackYear) {
-  const W = 900, H = 450, PL = 75, PR = 40, PT = 80, PB = 90;
-  const vals = data.map(d => d.value);
-  const minV = Math.min(...vals), maxV = Math.max(...vals);
-  const bigScale = Math.abs(minV) > 100000;
-  const sc = bigScale ? 1000000 : 10000;
-  const flr = v => Math.floor(v / sc) * sc;
-  const cl  = v => Math.ceil(v / sc) * sc;
-  const yTicks = Array.from(new Set([flr(minV), 0, cl(maxV/2), cl(maxV)])).sort((a,b)=>a-b);
-  const yMin = yTicks[0] - Math.abs(yTicks[0]) * 0.1;
-  const yMax = yTicks[yTicks.length-1] + Math.abs(yTicks[yTicks.length-1]) * 0.1;
-  const range = yMax - yMin || 1;
-  const gx = i => PL + i * (W - PL - PR) / (data.length - 1);
-  const gy = v => H - PB - ((v - yMin) * (H - PB - PT) / range);
-  const z = gy(0);
-
-  const fmtV = v => {
-    const a = Math.abs(v);
-    if (a >= 1000000) return (v/1000000).toFixed(2) + 'M';
-    if (a >= 1000) return (v/1000).toFixed(1) + 'K';
-    return v.toFixed(0);
-  };
-
-  const pts = data.map((d,i) => `${gx(i)},${gy(d.value)}`).join(' ');
-  const area = `M${gx(0)},${z} ${data.map((d,i)=>`L${gx(i)},${gy(d.value)}`).join(' ')} L${gx(data.length-1)},${z} Z`;
-  const pbX = gx(paybackYear);
-  const last = data[data.length-1];
-  const finalY = gy(last.value);
-  const pb = paybackYear.toFixed(1);
-
-  // Payback label: top of line, offset to the right side
-  const labelLeft = paybackYear < 20;
-  const labelOffX = labelLeft ? 10 : -100;
-
-  // Legend centred below year labels
-  const legendY = H - PB + 52;
-  const legendCx = W / 2;
-
-  // Insight
-  const cur = state.displayCurrency;
-  const irrVal = window._results ? window._results.irr : '—';
-  const netVal = fmtV(last.value);
-  document.getElementById('chartInsight').textContent =
-    `System breaks even in ${pb} yrs · IRR ${irrVal}% · 25-yr net: ${cur} ${netVal}`;
-
-  document.getElementById('cashFlowChart').innerHTML = `
-    <defs>
-      <linearGradient id="ag" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#10b981" stop-opacity="0.2"/>
-        <stop offset="${((yMax)/range)*100}%" stop-color="#10b981" stop-opacity="0.04"/>
-        <stop offset="${((yMax)/range)*100}%" stop-color="#f43f5e" stop-opacity="0.04"/>
-        <stop offset="100%" stop-color="#f43f5e" stop-opacity="0.2"/>
-      </linearGradient>
-    </defs>
-    ${yTicks.map(v=>`
-      <g transform="translate(0,${gy(v)})">
-        <line x1="${PL}" y1="0" x2="${W-PR}" y2="0" stroke="#f1f5f9" stroke-width="1"/>
-        <text x="${PL-10}" y="4" text-anchor="end" font-size="10" font-weight="700" fill="#94a3b8">${fmtV(v)}</text>
-      </g>`).join('')}
-    <line x1="${PL}" y1="${z}" x2="${W-PR}" y2="${z}" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="6"/>
-    <path d="${area}" fill="url(#ag)"/>
-    <polyline fill="none" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${pts}"/>
-
-    <!-- Milestone dots every 5 years -->
-    ${data.map((d,i)=>(i%5===0||i===data.length-1)?`<circle cx="${gx(i)}" cy="${gy(d.value)}" r="4" fill="${d.value>=0?'#10b981':'#f43f5e'}" stroke="white" stroke-width="2"/>`:``).join('')}
-
-    <!-- X-axis year labels -->
-    ${[0,5,10,15,20,25].map(yr=>`<text x="${gx(yr)}" y="${H-PB+18}" text-anchor="middle" font-size="10" font-weight="700" fill="#94a3b8">YEAR ${yr}</text>`).join('')}
-
-    <!-- Net profit callout -->
-    <g transform="translate(${gx(25)},${finalY})">
-      <rect x="-70" y="-40" width="140" height="28" rx="14" fill="#0f172a"/>
-      <text y="-22" text-anchor="middle" font-size="10" font-weight="700" fill="white">NET: ${fmtV(last.value)}</text>
-      <path d="M-6-12 L0-4 L6-12" fill="#0f172a"/>
-      <circle r="5" fill="#10b981" stroke="white" stroke-width="2"/>
-    </g>
-
-    <!-- Payback vertical dashed line -->
-    <line x1="${pbX}" y1="${PT}" x2="${pbX}" y2="${H-PB}" stroke="#F26522" stroke-width="1.5" stroke-dasharray="4"/>
-
-    <!-- Payback dot on zero-line -->
-    <g transform="translate(${pbX},${z})">
-      <circle r="8" fill="#F26522" opacity="0.15"/>
-      <circle r="4" fill="#F26522" stroke="white" stroke-width="2"/>
-    </g>
-
-    <!-- Payback label at top, beside the line -->
-    <g transform="translate(${pbX},${PT})">
-      <rect x="${labelOffX}" y="-18" width="90" height="20" rx="10" fill="#F26522"/>
-      <text x="${labelOffX + 45}" y="-4" text-anchor="middle" font-size="10" font-weight="700" fill="white">Payback: ${pb}y</text>
-    </g>
-
-    <!-- Legend centred below years -->
-    <g transform="translate(${legendCx},${legendY})">
-      <circle cx="-140" cy="0" r="5" fill="#10b981"/>
-      <text x="-130" y="4" font-size="10" font-weight="700" fill="#64748b">Profit / Savings</text>
-      <circle cx="-20" cy="0" r="5" fill="#f43f5e"/>
-      <text x="-10" y="4" font-size="10" font-weight="700" fill="#64748b">Investment</text>
-      <line x1="100" y1="0" x2="116" y2="0" stroke="#F26522" stroke-width="2" stroke-dasharray="3"/>
-      <circle cx="124" cy="0" r="4" fill="#F26522"/>
-      <text x="134" y="4" font-size="10" font-weight="700" fill="#F26522">Break-even</text>
-    </g>
-
-    <!-- Invisible hover hit areas -->
-    ${data.map((d,i)=>`<rect class="hover-bar" x="${gx(i)-9}" y="${PT}" width="18" height="${H-PB-PT}" fill="transparent" data-year="${d.year}" data-val="${d.value}" data-x="${gx(i)}" data-y="${gy(d.value)}"/>`).join('')}
-  `;
-
-  // Attach hover events
-  const svg = document.getElementById('cashFlowChart');
-  const tooltip = document.getElementById('chartTooltip');
-  const svgRect = () => svg.getBoundingClientRect();
-  const vbW = W, vbH = H + PB;
-
-  svg.querySelectorAll('.hover-bar').forEach(bar => {
-    bar.addEventListener('mouseenter', e => {
-      const year = bar.getAttribute('data-year');
-      const val = parseFloat(bar.getAttribute('data-val'));
-      const bx = parseFloat(bar.getAttribute('data-x'));
-      const by = parseFloat(bar.getAttribute('data-y'));
-      const r = svgRect();
-      const scaleX = r.width / vbW;
-      const scaleY = r.height / vbH;
-      const left = r.left + bx * scaleX;
-      const top = r.top + by * scaleY;
-      const sign = val >= 0 ? '+' : '';
-      tooltip.innerHTML = `<span style="color:${val>=0?'#34d399':'#f87171'}">●</span> Year ${year}: ${sign}${cur} ${fmtV(val)}`;
-      tooltip.style.display = 'block';
-      tooltip.style.left = (left - document.querySelector('.chart-full').getBoundingClientRect().left) + 'px';
-      tooltip.style.top = (top - document.querySelector('.chart-full').getBoundingClientRect().top) + 'px';
+function drawChart(data,pb){
+  var W=900,H=450,PL=75,PR=40,PT=80,PB=90;
+  var vals=data.map(function(d){return d.v;}), minV=Math.min.apply(null,vals), maxV=Math.max.apply(null,vals);
+  var big=Math.abs(minV)>100000, sc=big?1000000:10000;
+  var fl=function(v){return Math.floor(v/sc)*sc;}, cl=function(v){return Math.ceil(v/sc)*sc;};
+  var tks=[fl(minV),0,cl(maxV/2),cl(maxV)].filter(function(v,i,a){return a.indexOf(v)===i;}).sort(function(a,b){return a-b;});
+  var yMn=tks[0]-Math.abs(tks[0])*.1, yMx=tks[tks.length-1]+Math.abs(tks[tks.length-1])*.1, rng=yMx-yMn||1;
+  var gx=function(i){return PL+i*(W-PL-PR)/(data.length-1);};
+  var gy=function(v){return H-PB-((v-yMn)*(H-PB-PT)/rng);};
+  var z=gy(0);
+  var pts=data.map(function(d,i){return gx(i)+','+gy(d.v);}).join(' ');
+  var area='M'+gx(0)+','+z+' '+data.map(function(d,i){return 'L'+gx(i)+','+gy(d.v);}).join(' ')+' L'+gx(data.length-1)+','+z+' Z';
+  var pbX=gx(pb), last=data[data.length-1], fY=gy(last.v);
+  var lox=(pb<20)?10:-100, lCx=W/2, lY=H-PB+52;
+  var h='<defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1">'
+    +'<stop offset="0%" stop-color="#10b981" stop-opacity="0.2"/>'
+    +'<stop offset="'+(yMx/rng*100)+'%" stop-color="#10b981" stop-opacity="0.04"/>'
+    +'<stop offset="'+(yMx/rng*100)+'%" stop-color="#f43f5e" stop-opacity="0.04"/>'
+    +'<stop offset="100%" stop-color="#f43f5e" stop-opacity="0.2"/>'
+    +'</linearGradient></defs>';
+  tks.forEach(function(v){ h+='<g transform="translate(0,'+gy(v)+')">'+'<line x1="'+PL+'" y1="0" x2="'+(W-PR)+'" y2="0" stroke="#f1f5f9" stroke-width="1"/>'+'<text x="'+(PL-10)+'" y="4" text-anchor="end" font-size="10" font-weight="700" fill="#94a3b8">'+fv(v)+'</text></g>'; });
+  h+='<line x1="'+PL+'" y1="'+z+'" x2="'+(W-PR)+'" y2="'+z+'" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="6"/>';
+  h+='<path d="'+area+'" fill="url(#ag)"/>';
+  h+='<polyline fill="none" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="'+pts+'"/>';
+  data.forEach(function(d,i){ if(i%5===0||i===data.length-1) h+='<circle cx="'+gx(i)+'" cy="'+gy(d.v)+'" r="4" fill="'+(d.v>=0?'#10b981':'#f43f5e')+'" stroke="white" stroke-width="2"/>'; });
+  [0,5,10,15,20,25].forEach(function(yr){ h+='<text x="'+gx(yr)+'" y="'+(H-PB+18)+'" text-anchor="middle" font-size="10" font-weight="700" fill="#94a3b8">YEAR '+yr+'</text>'; });
+  h+='<g transform="translate('+gx(25)+','+fY+')">'+'<rect x="-70" y="-40" width="140" height="28" rx="14" fill="#0f172a"/>'+'<text y="-22" text-anchor="middle" font-size="10" font-weight="700" fill="white">NET: '+fv(last.v)+'</text>'+'<path d="M-6-12 L0-4 L6-12" fill="#0f172a"/>'+'<circle r="5" fill="#10b981" stroke="white" stroke-width="2"/></g>';
+  h+='<line x1="'+pbX+'" y1="'+PT+'" x2="'+pbX+'" y2="'+(H-PB)+'" stroke="#F26522" stroke-width="1.5" stroke-dasharray="4"/>';
+  h+='<g transform="translate('+pbX+','+PT+')">'+'<rect x="'+lox+'" y="-18" width="90" height="20" rx="10" fill="#F26522"/>'+'<text x="'+(lox+45)+'" y="-4" text-anchor="middle" font-size="10" font-weight="700" fill="white">Payback: '+pb.toFixed(1)+'y</text></g>';
+  h+='<g transform="translate('+pbX+','+z+')">'+'<circle r="8" fill="#F26522" opacity="0.15"/>'+'<circle r="4" fill="#F26522" stroke="white" stroke-width="2"/></g>';
+  h+='<g transform="translate('+lCx+','+lY+')">'+'<circle cx="-140" cy="0" r="5" fill="#10b981"/>'+'<text x="-130" y="4" font-size="10" font-weight="700" fill="#64748b">Profit / Savings</text>'+'<circle cx="-20" cy="0" r="5" fill="#f43f5e"/>'+'<text x="-10" y="4" font-size="10" font-weight="700" fill="#64748b">Investment</text>'+'<line x1="100" y1="0" x2="116" y2="0" stroke="#F26522" stroke-width="2" stroke-dasharray="3"/>'+'<circle cx="124" cy="0" r="4" fill="#F26522"/>'+'<text x="134" y="4" font-size="10" font-weight="700" fill="#F26522">Break-even</text></g>';
+  data.forEach(function(d,i){ h+='<rect class="hb" x="'+(gx(i)-9)+'" y="'+PT+'" width="18" height="'+(H-PB-PT)+'" fill="transparent" data-y="'+d.y+'" data-v="'+d.v+'" data-gx="'+gx(i)+'" data-gy="'+gy(d.v)+'"/>'; });
+  var svg=document.getElementById('cashFlowChart'); svg.innerHTML=h;
+  var tip=document.getElementById('chartTooltip'), cw=document.querySelector('.chart-wrap');
+  svg.querySelectorAll('.hb').forEach(function(bar){
+    bar.addEventListener('mouseenter',function(){
+      var yr=bar.getAttribute('data-y'), v=parseFloat(bar.getAttribute('data-v'));
+      var bx=parseFloat(bar.getAttribute('data-gx')), by=parseFloat(bar.getAttribute('data-gy'));
+      var sr=svg.getBoundingClientRect(), cr=cw.getBoundingClientRect();
+      var sx=sr.width/W, sy=sr.height/(H+PB);
+      tip.innerHTML='<span style="color:'+(v>=0?'#34d399':'#f87171')+'">&#9679;</span> Year '+yr+': '+(v>=0?'+':'')+S.cur+' '+fv(v);
+      tip.style.display='block'; tip.style.left=((sr.left-cr.left)+bx*sx)+'px'; tip.style.top=((sr.top-cr.top)+by*sy)+'px';
     });
-    bar.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+    bar.addEventListener('mouseleave',function(){tip.style.display='none';});
   });
 }
 
-async function generateQuote() {
-  const btn = document.getElementById('quoteBtn');
-  const aiBox = document.getElementById('aiBox');
-  const aiText = document.getElementById('aiText');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spin">⌛</span> Generating…';
-  aiBox.classList.add('visible');
-  aiText.textContent = 'Preparing your executive analysis…';
+function openModal(){
+  set('ms-solar',R.solar||'--'); set('ms-inv',R.inv||'--'); set('ms-bat',R.bat||'--');
+  set('ms-cost',R.cost||'--'); set('ms-cur',R.cur||'KES'); set('ms-pb',R.pb||'--'); set('ms-irr',R.irrV||'--');
+  document.getElementById('f-name').value=''; document.getElementById('f-phone').value=''; document.getElementById('f-email').value='';
+  document.getElementById('formErr').style.display='none';
+  document.getElementById('mFormBody').style.display='block';
+  document.getElementById('mSuccess').classList.remove('show');
+  document.getElementById('quoteModal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){ document.getElementById('quoteModal').classList.remove('open'); document.body.style.overflow=''; }
 
-  const r = window._results || {};
-  const prompt = `Act as a Solar Consultant. Provide a summary for ${r.buildingType}:
-- System: ${r.solarPlant}kWp | Battery: ${r.battery}kWh.
-- Financials: Capex ${r.displayCurrency} ${r.systemCost} | Payback: ${r.payback} years | IRR: ${r.irr}%.
-- 25-Year Profit: ${r.displayCurrency} ${r.netProfit}.
-Under 100 words.`;
-
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': 'YOUR_ANTHROPIC_API_KEY_HERE',
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 200, messages: [{ role: 'user', content: prompt }] })
-    });
-    const data = await res.json();
-    const text = data.content?.find(b => b.type === 'text')?.text || 'Analysis complete.';
-    aiText.textContent = text;
-    const id = 'QT-' + Date.now().toString(36).toUpperCase();
-    document.getElementById('quoteIdText').textContent = 'Verified ID: ' + id;
-    document.getElementById('quoteBadge').style.display = 'flex';
-  } catch(e) {
-    aiText.textContent = 'Could not generate AI analysis at this time.';
-  }
-
-  btn.disabled = false;
-  btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Get a Quote';
+function submitQuote(){
+  var name=document.getElementById('f-name').value.trim();
+  var phone=document.getElementById('f-phone').value.trim();
+  var email=document.getElementById('f-email').value.trim();
+  var err=document.getElementById('formErr');
+  if(!name||!phone||!email){err.textContent='Please fill in all fields.';err.style.display='block';return;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){err.textContent='Please enter a valid email address.';err.style.display='block';return;}
+  err.style.display='none';
+  var btn=document.getElementById('submitBtn'); btn.disabled=true; btn.innerHTML='<span class="spin">&#8987;</span> Sending&hellip;';
+  var subj=encodeURIComponent('Solar Quote Request - '+name+' - '+R.solar+'kWp '+R.bldg);
+  var body=encodeURIComponent('New Solar Quote Request - Megatricity Calculator\n=================================================\n\nCONTACT DETAILS\nName:   '+name+'\nMobile: '+phone+'\nEmail:  '+email+'\n\nSYSTEM ESTIMATE\nBuilding Type:    '+R.bldg+' ('+R.hybr+')\nSolar Plant:      '+R.solar+' kWp\nInverter:         '+R.inv+' kVA\nBattery:          '+R.bat+' kWh\nYear 1 Gen:       '+R.gen+' kWh\n\nFINANCIALS ('+R.cur+')\nEst. System Cost: '+R.cost+'\nPayback Period:   '+R.pb+' years\nIRR:              '+R.irrV+'%\nNPV (@10%):       '+R.npv+'\nNet 25-yr Savings:'+R.profit+'\nLCOE:             '+R.lcoe+'/kWh\n\nMonthly Bill Input: '+S.bill.toLocaleString()+' '+S.unit+'\n---\nSent via Megatricity Solar Calculator\nhttps://www.megatricity.co.ke');
+  window.location.href='mailto:megatricity.co.ke@gmail.com?subject='+subj+'&body='+body;
+  setTimeout(function(){
+    btn.disabled=false; btn.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send Quote Request';
+    document.getElementById('mFormBody').style.display='none'; document.getElementById('mSuccess').classList.add('show');
+    var id='QT-'+Date.now().toString(36).toUpperCase(); set('quoteIdText','Quote ID: '+id); document.getElementById('quoteBadge').style.display='flex';
+  },800);
 }
 
-recalculate();
+calc();
 </script>
 </body>
 </html>
